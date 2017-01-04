@@ -28,12 +28,35 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.components = new System.ComponentModel.Container();
+            this.geckoWebBrowser1 = new Gecko.GeckoWebBrowser();
+            this.SuspendLayout();
+            // 
+            // geckoWebBrowser1
+            // 
+            this.geckoWebBrowser1.Dock = System.Windows.Forms.DockStyle.Bottom;
+            this.geckoWebBrowser1.FrameEventsPropagateToMainWindow = false;
+            this.geckoWebBrowser1.Location = new System.Drawing.Point(0, 60);
+            this.geckoWebBrowser1.Name = "geckoWebBrowser1";
+            this.geckoWebBrowser1.Size = new System.Drawing.Size(615, 282);
+            this.geckoWebBrowser1.TabIndex = 0;
+            this.geckoWebBrowser1.UseHttpActivityObserver = false;
+            // 
+            // Form1
+            // 
+            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.ClientSize = new System.Drawing.Size(615, 342);
+            this.Controls.Add(this.geckoWebBrowser1);
+            this.Name = "Form1";
             this.Text = "Form1";
+            this.Load += new System.EventHandler(this.Form1_Load);
+            this.ResumeLayout(false);
+
         }
 
         #endregion
+
+        private Gecko.GeckoWebBrowser geckoWebBrowser1;
     }
 }
 

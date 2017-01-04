@@ -1,1 +1,15 @@
 E:\git\MapMaker\MapMaker\MapMaker\bin\x86\Debug\MapMaker.exe.config
+E:\git\MapMaker\MapMaker\MapMaker\bin\x86\Debug\MapMaker.exe
+E:\git\MapMaker\MapMaker\MapMaker\bin\x86\Debug\MapMaker.pdb
+E:\git\MapMaker\MapMaker\MapMaker\bin\x86\Debug\Geckofx-Core.dll
+E:\git\MapMaker\MapMaker\MapMaker\bin\x86\Debug\Geckofx-Winforms.dll
+E:\git\MapMaker\MapMaker\MapMaker\bin\x86\Debug\System.Data.SQLite.dll
+E:\git\MapMaker\MapMaker\MapMaker\bin\x86\Debug\Geckofx-Core.pdb
+E:\git\MapMaker\MapMaker\MapMaker\bin\x86\Debug\Geckofx-Winforms.pdb
+E:\git\MapMaker\MapMaker\MapMaker\bin\x86\Debug\System.Data.SQLite.xml
+E:\git\MapMaker\MapMaker\MapMaker\obj\x86\Debug\MapMaker.csprojResolveAssemblyReference.cache
+E:\git\MapMaker\MapMaker\MapMaker\obj\x86\Debug\MapMaker.Form1.resources
+E:\git\MapMaker\MapMaker\MapMaker\obj\x86\Debug\MapMaker.Properties.Resources.resources
+E:\git\MapMaker\MapMaker\MapMaker\obj\x86\Debug\MapMaker.csproj.GenerateResource.Cache
+E:\git\MapMaker\MapMaker\MapMaker\obj\x86\Debug\MapMaker.exe
+E:\git\MapMaker\MapMaker\MapMaker\obj\x86\Debug\MapMaker.pdb
