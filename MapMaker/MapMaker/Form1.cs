@@ -11,6 +11,7 @@ using Gecko;
 using System.Data.SQLite;
 using Freezer.Core;
 using System.IO;
+using MapMaker.MapHelper;
 
 
 namespace MapMaker
@@ -31,6 +32,8 @@ namespace MapMaker
             cmd.Connection = conn;
             conn.Open();
             SQLiteHelper sh = new SQLiteHelper(cmd);
+            MCObject mco = new MCObject(12958175, 4825923.77, true);
+            MessageBox.Show(mco.Latitude + " , " + mco.Longitude);
             //geckoWebBrowser1.Navigate("file:///E:/git/map.html");
         }
 
