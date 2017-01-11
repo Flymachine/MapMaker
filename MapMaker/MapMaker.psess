@@ -3,7 +3,7 @@
   <Options>
     <Solution>MapMaker.sln</Solution>
     <CollectionMethod>Sampling</CollectionMethod>
-    <AllocationMethod>Allocation</AllocationMethod>
+    <AllocationMethod>None</AllocationMethod>
     <AddReport>true</AddReport>
     <ResourceBasedAnalysisSelected>true</ResourceBasedAnalysisSelected>
     <UniqueReport>Timestamp</UniqueReport>
@@ -67,11 +67,6 @@
       <ProjName>MapMaker</ProjName>
     </ProjBinary>
   </Binaries>
-  <Reports>
-    <Report>
-      <Path>MapMaker170105(2).vsp</Path>
-    </Report>
-  </Reports>
   <Launches>
     <ProjBinary>
       <Path>:PB:{4FEDFE57-4FC4-4097-B6B9-FDF639AA8565}|MapMaker\MapMaker.csproj</Path>
