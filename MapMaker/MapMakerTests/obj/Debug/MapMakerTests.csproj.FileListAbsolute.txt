@@ -1,0 +1,17 @@
+E:\git\MapMaker\MapMaker\MapMakerTests\bin\Debug\MapMakerTests.dll
+E:\git\MapMaker\MapMaker\MapMakerTests\bin\Debug\MapMakerTests.pdb
+E:\git\MapMaker\MapMaker\MapMakerTests\bin\Debug\MapMaker.exe
+E:\git\MapMaker\MapMaker\MapMakerTests\bin\Debug\Microsoft.VisualStudio.QualityTools.UnitTestFramework.dll
+E:\git\MapMaker\MapMaker\MapMakerTests\bin\Debug\System.Data.SQLite.dll
+E:\git\MapMaker\MapMaker\MapMakerTests\bin\Debug\Geckofx-Winforms.dll
+E:\git\MapMaker\MapMaker\MapMakerTests\bin\Debug\Freezer.dll
+E:\git\MapMaker\MapMaker\MapMakerTests\bin\Debug\Geckofx-Core.dll
+E:\git\MapMaker\MapMaker\MapMakerTests\bin\Debug\MapMaker.pdb
+E:\git\MapMaker\MapMaker\MapMakerTests\bin\Debug\System.Data.SQLite.xml
+E:\git\MapMaker\MapMaker\MapMakerTests\bin\Debug\Geckofx-Winforms.pdb
+E:\git\MapMaker\MapMaker\MapMakerTests\bin\Debug\Freezer.xml
+E:\git\MapMaker\MapMaker\MapMakerTests\bin\Debug\Geckofx-Core.pdb
+E:\git\MapMaker\MapMaker\MapMakerTests\bin\Debug\zh-Hans\Microsoft.VisualStudio.QualityTools.UnitTestFramework.resources.dll
+E:\git\MapMaker\MapMaker\MapMakerTests\obj\Debug\MapMakerTests.csprojResolveAssemblyReference.cache
+E:\git\MapMaker\MapMaker\MapMakerTests\obj\Debug\MapMakerTests.dll
+E:\git\MapMaker\MapMaker\MapMakerTests\obj\Debug\MapMakerTests.pdb

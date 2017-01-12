@@ -19,10 +19,10 @@ namespace MapMaker.MapHelper
         {
             if (OutLongitudeAndLatitude)
             {
-                MCx = x;
+                _MCx = x;
                 _MCy = y;
 
-                convertMC2LL(MCx, _MCy);
+                convertMC2LL(_MCx, _MCy);
             }
             else
             {
@@ -63,7 +63,8 @@ namespace MapMaker.MapHelper
         {
             get
             {
-                    return Math.Round(_Longitude, 6);
+                // return Math.Round(_Longitude, 6);
+                return _Longitude;
             }
 
             set { _Longitude = value; }
@@ -73,7 +74,8 @@ namespace MapMaker.MapHelper
         {
             get
             {
-                    return Math.Round(_Latitude, 6);
+                //return Math.Round(_Latitude, 6);
+                return _Latitude;
             }
             set { _Latitude = value; }
         }

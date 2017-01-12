@@ -1,8 +1,19 @@
-﻿using System;
+﻿/*---------------------------------------------------------------- 
+// 开发者Lei Yu版权所有。  
+// 
+// 文件名： MapHelper.cs
+// 文件功能描述： 自动创建包含一些点的百度地图用于生成图片。
+// author：Lei Yu
+// 时间：2017-1-11
+// 创建标识： 2017/1/12 测试完毕
+// 
+// 修改标识： 
+//  
+// 修改描述：
+//----------------------------------------------------------------*/
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace MapMaker.MapHelper
 {
@@ -74,7 +85,7 @@ namespace MapMaker.MapHelper
             set
             {
                 _user_center_LL = value;
-                _area_MC = convertArea2UserArea(_user_center_LL, convertArea_MC2P_LL(_area_MC), _area_MC);
+                _area_MC = convertArea2UserArea(_user_center_LL, _area_MC);
                 int[] auto_area_pixel = convertAreaMC2Pixel(_area_MC, _level);
                 _area_pixel_x = auto_area_pixel[0];
                 _area_pixel_y = auto_area_pixel[1];
@@ -92,7 +103,7 @@ namespace MapMaker.MapHelper
             set
             {
                 _user_area_pixel = value;
-                _area_MC = convertAreaPixel2MC(_user_area_pixel, _level, _user_center_LL);
+                _area_MC = convertAreaPixel2MC(_user_area_pixel, _level, _area_MC);
             }
         }
         /// <summary>  
@@ -103,6 +114,22 @@ namespace MapMaker.MapHelper
             get
             {
                 return _level;
+            }
+            protected set
+            {
+                if(value < 1)
+                {
+                    _level = 1;
+                }
+                else if(value > 18)
+                {
+                    _level = 18;
+                }
+                else
+                {
+                    _level = value;
+                }
+                
             }
         }
         /// <summary>  
@@ -156,7 +183,7 @@ namespace MapMaker.MapHelper
         {
             get
             {
-                return checkLackPs(_area_MC, _P_area_MC_up, _P_area_MC_right, _P_area_MC_bottom, _P_area_MC_left);
+                return checkLackPs(_area_MC, _level, _P_area_MC_up, _P_area_MC_right, _P_area_MC_bottom, _P_area_MC_left);
             }
         }
         /// <summary>  
@@ -166,7 +193,7 @@ namespace MapMaker.MapHelper
         {
             get
             {
-                return checkLackPs(_area_MC, _P_area_MC_up, _P_area_MC_right, _P_area_MC_bottom, _P_area_MC_left);
+                return checkCoverPs(_level, _P_area_MC_up, _P_area_MC_right, _P_area_MC_bottom, _P_area_MC_left);
             }
         }
         /// <summary>  
@@ -239,21 +266,21 @@ namespace MapMaker.MapHelper
         /// <summary>  
         ///   地图制作助手（不自设中心点和地图像素尺寸）
         /// </summary>
-        public MapHelper(int level, int[] area_bleed_Pixel, int[] cut_area_pixel, Dictionary<int, double[]> Ps_LL_and_bleed)
+        public MapHelper(int user_level, int[] area_bleed_Pixel, int[] cut_area_pixel, Dictionary<int, double[]> Ps_LL_and_bleed)
         {
-            _level = level;
+            level = user_level;
             _area_bleed_Pixel = area_bleed_Pixel;
             _cut_area_pixel = cut_area_pixel;
             _Ps_LL_and_bleed = Ps_LL_and_bleed;
             //以下运行代码
-            covertP_LL2MC(_Ps_LL_and_bleed, _level);
+            covertP_LL2MC(_Ps_LL_and_bleed, level);
             _area_bleed_MC = new double[] { Math.Abs(convert(_area_bleed_Pixel[0], level)), Math.Abs(convert(_area_bleed_Pixel[1], level)) };
             _area_MC = sumPsArea(_area_bleed_MC, _P_area_MC_up, _P_area_MC_right, _P_area_MC_bottom, _P_area_MC_left);
             double[] auto_center_LL = convertArea_MC2P_LL(_area_MC);
             _center_x_LL = auto_center_LL[0];
             _center_y_LL = auto_center_LL[1];
             _user_center_LL = auto_center_LL;
-            int[] auto_area_pixel = convertAreaMC2Pixel(_area_MC, _level);
+            int[] auto_area_pixel = convertAreaMC2Pixel(_area_MC, level);
             _area_pixel_x = auto_area_pixel[0];
             _area_pixel_y = auto_area_pixel[1];
             _user_area_pixel = auto_area_pixel;
@@ -262,28 +289,28 @@ namespace MapMaker.MapHelper
         /// <summary>  
         ///   地图制作助手（自设中心点和地图像素尺寸）
         /// </summary>
-        public MapHelper(int level, int[] area_bleed_Pixel, int[] cut_area_pixel, Dictionary<int, double[]> Ps_LL_and_bleed, double[] user_center_LL, int[] user_area_pixel)
+        public MapHelper(int user_level, int[] area_bleed_Pixel, int[] cut_area_pixel, Dictionary<int, double[]> Ps_LL_and_bleed, double[] user_center_LL, int[] user_area_pixel)
         {
-            _level = level;
+            level = user_level;
             _area_bleed_Pixel = area_bleed_Pixel;
             _cut_area_pixel = cut_area_pixel;
             _Ps_LL_and_bleed = Ps_LL_and_bleed;
             _user_center_LL = user_center_LL;
             _user_area_pixel = user_area_pixel;
             //以下运行代码
-            covertP_LL2MC(_Ps_LL_and_bleed, _level);
+            covertP_LL2MC(_Ps_LL_and_bleed, level);
             _area_bleed_MC = new double[] { Math.Abs(convert(_area_bleed_Pixel[0], level)), Math.Abs(convert(_area_bleed_Pixel[1], level)) };
             _area_MC = sumPsArea(_area_bleed_MC, _P_area_MC_up, _P_area_MC_right, _P_area_MC_bottom, _P_area_MC_left);
             double[] auto_center_LL = convertArea_MC2P_LL(_area_MC);
             _center_x_LL = auto_center_LL[0];
             _center_y_LL = auto_center_LL[1];
 
-            _area_MC = convertArea2UserArea(_user_center_LL, auto_center_LL, _area_MC);
-            int[] auto_area_pixel = convertAreaMC2Pixel(_area_MC, _level);
+            _area_MC = convertArea2UserArea(_user_center_LL, _area_MC);
+            int[] auto_area_pixel = convertAreaMC2Pixel(_area_MC, level);
             _area_pixel_x = auto_area_pixel[0];
             _area_pixel_y = auto_area_pixel[1];
 
-            _area_MC = convertAreaPixel2MC(_user_area_pixel, _level, _user_center_LL);
+            _area_MC = convertAreaPixel2MC(_user_area_pixel, level, _area_MC);
         }
         #endregion
         #region 私有方法
@@ -294,17 +321,23 @@ namespace MapMaker.MapHelper
         /// <param name="level">地图级别</param>
         private void covertP_LL2MC(Dictionary<int, double[]> Ps_LL_and_bleed, int level)
         {
-            Dictionary<int, double[]> list = Ps_LL_and_bleed;
-            foreach (var item in list)
+            try
             {
-                Double[] center_MC = convertMC2LL(item.Value[0], item.Value[1]);
-                Double[] P_Area = convertP2Area(level, center_MC[0], center_MC[1], item.Value[2], item.Value[3], item.Value[4], item.Value[5]);
-                _P_area_MC_up[item.Key] = P_Area[0];
-                _P_area_MC_right[item.Key] = P_Area[1];
-                _P_area_MC_bottom[item.Key] = P_Area[2];
-                _P_area_MC_left[item.Key] = P_Area[3];
+                Dictionary<int, double[]> list = Ps_LL_and_bleed;
+                foreach (var item in list)
+                {
+                    Double[] center_MC = convertMC2LL(item.Value[0], item.Value[1]);
+                    Double[] P_Area = convertP2Area(level, center_MC[0], center_MC[1], item.Value[2], item.Value[3], item.Value[4], item.Value[5]);
+                    _P_area_MC_up[item.Key] = P_Area[0];
+                    _P_area_MC_right[item.Key] = P_Area[1];
+                    _P_area_MC_bottom[item.Key] = P_Area[2];
+                    _P_area_MC_left[item.Key] = P_Area[3];
+                }
             }
-            
+            catch (Exception)
+            {
+                throw;
+            }
         }
         #endregion
         /// <summary>  
@@ -315,16 +348,23 @@ namespace MapMaker.MapHelper
         /// <param name="OutPixel">trueMC平面坐标转像素,false像素转MC平面坐标</param>
         public double convert(double value, int level, bool OutPixel = false)
         {
-            double value_1 = 0;
-            if(OutPixel)
+            try
             {
-                value_1 = Math.Floor(value * Math.Pow(2, level - 18));
+                double value_1 = 0;
+                if (OutPixel)
+                {
+                    value_1 = Math.Floor(value * Math.Pow(2, level - 18));
+                }
+                else
+                {
+                    value_1 = value * Math.Pow(2, 18 - level);
+                }
+                return value_1;
             }
-            else
+            catch (Exception)
             {
-                value_1 = value / Math.Pow(2, level - 18);
+                throw;
             }
-            return value_1;
         }
         /// <summary>  
         ///   经纬坐标/平面坐标互转
@@ -333,12 +373,25 @@ namespace MapMaker.MapHelper
         /// <param name="y">纬度</param>  
         public double[] convertMC2LL(double x, double y, bool OutLongitudeAndLatitude = false)
         {
-            MCObject mco = new MCObject(x, y, OutLongitudeAndLatitude);
-            double[] MC = new double[2];
-            MC[0] = mco.MCx;
-            MC[1] = mco.MCy;
-
-            return MC;
+            try
+            {
+                MCObject mco = new MCObject(Math.Abs(x), Math.Abs(y), OutLongitudeAndLatitude);
+                if (OutLongitudeAndLatitude)
+                {
+                    double[] LL = new double[2];
+                    LL[0] = mco.Longitude * (x < 0 ? -1 : 1);
+                    LL[1] = mco.Latitude * (y < 0 ? -1 : 1);
+                    return LL;
+                }
+                double[] MC = new double[2];
+                MC[0] = mco.MCx * (x < 0 ? -1 : 1);
+                MC[1] = mco.MCy * (y < 0 ? -1 : 1);
+                return MC;
+            }
+            catch (Exception)
+            {
+                throw;
+            }
         }
         /// <summary>  
         ///   计算点的平面坐标区域
@@ -352,17 +405,24 @@ namespace MapMaker.MapHelper
         /// <param name="bleedl">出血区域left</param>
         public double[] convertP2Area(int level, double MCx, double MCy, double bleedu, double bleedr, double bleedb, double bleedl)
         {
-            double[] MCArea = new double[4];
-            double bleedu_MC = convert(bleedu, level);
-            double bleedr_MC = convert(bleedr, level);
-            double bleedb_MC = convert(bleedb, level);
-            double bleedl_MC = convert(bleedl, level);
+            try
+            {
+                double[] MCArea = new double[4];
+                double bleedu_MC = convert(bleedu, level);
+                double bleedr_MC = convert(bleedr, level);
+                double bleedb_MC = convert(bleedb, level);
+                double bleedl_MC = convert(bleedl, level);
 
-            MCArea[0] = MCy + bleedu_MC;
-            MCArea[1] = MCx + bleedr_MC;
-            MCArea[2] = MCy - bleedb_MC;
-            MCArea[3] = MCx - bleedl_MC;
-            return MCArea;
+                MCArea[0] = MCy + bleedu_MC;
+                MCArea[1] = MCx + bleedr_MC;
+                MCArea[2] = MCy - bleedb_MC;
+                MCArea[3] = MCx - bleedl_MC;
+                return MCArea;
+            }
+            catch (Exception)
+            {
+                throw;
+            }
         }
         /// <summary>  
         ///   计算地图的平面坐标区域
@@ -372,14 +432,21 @@ namespace MapMaker.MapHelper
         /// <param name="P_area_MC_right">点区域right</param>
         /// <param name="_P_area_MC_bottom">点区域bottom</param>
         /// <param name="_P_area_MC_left">点区域left</param>
-        public double[] sumPsArea(double[] area_bleed_MC, Dictionary<int, double> P_area_MC_up, Dictionary<int, double> P_area_MC_right, Dictionary<int, double> _P_area_MC_bottom, Dictionary<int, double> _P_area_MC_left)
+        public double[] sumPsArea(double[] area_bleed_MC, Dictionary<int, double> P_area_MC_up, Dictionary<int, double> P_area_MC_right, Dictionary<int, double> P_area_MC_bottom, Dictionary<int, double> P_area_MC_left)
         {
-            double[] area_MC = new double[4];
-            area_MC[0] = P_area_MC_up.Values.Max() + area_bleed_MC[0];
-            area_MC[1] = P_area_MC_right.Values.Max() + area_bleed_MC[1];
-            area_MC[2] = P_area_MC_bottom.Values.Min() - area_bleed_MC[2];
-            area_MC[3] = P_area_MC_left.Values.Min() - area_bleed_MC[3];
-            return area_MC;
+            try
+            {
+                double[] area_MC = new double[4];
+                area_MC[0] = P_area_MC_up.Values.ToArray().Max() + area_bleed_MC[0];
+                area_MC[1] = P_area_MC_right.Values.ToArray().Max() + area_bleed_MC[1];
+                area_MC[2] = P_area_MC_bottom.Values.ToArray().Min() - area_bleed_MC[2];
+                area_MC[3] = P_area_MC_left.Values.ToArray().Min() - area_bleed_MC[3];
+                return area_MC;
+            }
+            catch
+            {
+                throw;
+            }
         }
         /// <summary>  
         ///   计算地图的中心点（LL）
@@ -387,7 +454,15 @@ namespace MapMaker.MapHelper
         /// <param name="area_MC">地图区域平面坐标</param>
         public double[] convertArea_MC2P_LL(double[] area_MC)
         {
-            return convertMC2LL((area_MC[1] + area_MC[3]) / 2, (area_MC[2] + area_MC[0]) / 2, true);
+            try
+            {
+                return convertMC2LL((area_MC[1] + area_MC[3]) / 2, (area_MC[0] + area_MC[2]) / 2, true);
+            }
+            catch(Exception)
+            {
+                throw;
+            }
+            
         }
         // <summary>  
         ///   地图的中心点（LL）偏移，计算偏移后地图的平面坐标区域
@@ -395,18 +470,36 @@ namespace MapMaker.MapHelper
         /// <param name="user_center_LL">自设中心点</param>
         /// <param name="center_LL">自动中心点</param>
         /// <param name="area_MC">自动地图区域平面坐标</param>
-        public double[] convertArea2UserArea(double[] user_center_LL, double[] center_LL, double[] area_MC)
+        public double[] convertArea2UserArea(double[] user_center_LL, double[] area_MC)
         {
-            double center_LL_x = user_center_LL[0] - center_LL[0];
-            double center_LL_y = user_center_LL[1] - center_LL[1];
-            double[] skew_center_MC = convertMC2LL(center_LL_x, center_LL_y, true);
-            skew_center_MC[0] = Math.Abs(skew_center_MC[0]);
-            skew_center_MC[1] = Math.Abs(skew_center_MC[1]);
-            area_MC[0] += skew_center_MC[1];
-            area_MC[1] += skew_center_MC[0];
-            area_MC[2] -= skew_center_MC[1];
-            area_MC[3] -= skew_center_MC[0];
-            return area_MC;
+            try
+            {
+                double[] center_MC = new double[] { (area_MC[1] + area_MC[3]) / 2, (area_MC[0] + area_MC[2]) / 2 };
+                double[] user_center_MC = convertMC2LL(user_center_LL[0], user_center_LL[1], false);
+                double[] skew_center_MC = new double[] { user_center_MC[0] - center_MC[0], user_center_MC[1] - center_MC[1] };
+                if (skew_center_MC[0] < 0)
+                {
+                    area_MC[3] += 2 * skew_center_MC[0];
+                }
+                else
+                {
+                    area_MC[1] += 2 * skew_center_MC[0];
+                }
+                if (skew_center_MC[1] < 0)
+                {
+                    area_MC[2] += 2 * skew_center_MC[1];
+                }
+                else
+                {
+                    area_MC[0] += 2 * skew_center_MC[1];
+                }
+                return area_MC;
+            }
+            catch(Exception)
+            {
+                throw;
+            }
+            
         }
         /// <summary>  
         ///   计算地图的像素尺寸
@@ -415,10 +508,17 @@ namespace MapMaker.MapHelper
         /// <param name="level">地图等级</param>
         public int[] convertAreaMC2Pixel(double[] area_MC, int level)
         {
-            int[] area_pixel = new int[2];
-            area_pixel[0] = Convert.ToInt32(Math.Abs(convert(area_MC[1] - area_MC[3], level, true)));
-            area_pixel[1] = Convert.ToInt32(Math.Abs(convert(area_MC[0] - area_MC[2], level, true)));
-            return area_pixel;
+            try
+            {
+                int[] area_pixel = new int[2];
+                area_pixel[0] = Convert.ToInt32(Math.Abs(convert(area_MC[1] - area_MC[3], level, true)));
+                area_pixel[1] = Convert.ToInt32(Math.Abs(convert(area_MC[0] - area_MC[2], level, true)));
+                return area_pixel;
+            }
+            catch (Exception)
+            {
+                throw;
+            }
         }
         /// <summary>  
         ///   自设像素尺寸，计算地图区域平面坐标
@@ -426,19 +526,19 @@ namespace MapMaker.MapHelper
         /// <param name="user_area_pixel">自设像素尺寸</param>
         /// <param name="level">地图等级</param>
         /// <param name="center_LL">中心点坐标</param>
-        public double[] convertAreaPixel2MC(int[] user_area_pixel, int level, double[] center_LL)
+        public double[] convertAreaPixel2MC(int[] user_area_pixel, int level, double[] area_MC)
         {
             double area_MC_x, area_MC_y;
-            double[] center_MC, area_MC = new double[4];
+            double[] center_MC, user_area_MC = new double[4];
             area_MC_x = Math.Abs(convert(user_area_pixel[0], level));
             area_MC_y = Math.Abs(convert(user_area_pixel[1], level));
-            center_MC = convertMC2LL(center_LL[0], center_LL[1]);
-            area_MC[0] = center_MC[1] + (area_MC_y / 2);
-            area_MC[1] = center_MC[0] + (area_MC_x / 2);
-            area_MC[2] = center_MC[1] - (area_MC_y / 2);
-            area_MC[3] = center_MC[0] - (area_MC_x / 2);
+            center_MC = new double[] { (area_MC[1] + area_MC[3]) / 2, (area_MC[0] + area_MC[2]) / 2 };
+            user_area_MC[0] = center_MC[1] + (area_MC_y / 2);
+            user_area_MC[1] = center_MC[0] + (area_MC_x / 2);
+            user_area_MC[2] = center_MC[1] - (area_MC_y / 2);
+            user_area_MC[3] = center_MC[0] - (area_MC_x / 2);
 
-            return area_MC;
+            return user_area_MC;
         }
         /// <summary>  
         ///   检查漏点，返回漏点数组
@@ -448,22 +548,22 @@ namespace MapMaker.MapHelper
         /// <param name="P_area_MC_right">点区域right</param>
         /// <param name="_P_area_MC_bottom">点区域bottom</param>
         /// <param name="_P_area_MC_left">点区域left</param>
-        public List<int> checkLackPs(double[] area_MC, Dictionary<int, double> P_area_MC_up, Dictionary<int, double> P_area_MC_right, Dictionary<int, double> _P_area_MC_bottom, Dictionary<int, double> _P_area_MC_left)
+        public List<int> checkLackPs(double[] area_MC, int level, Dictionary<int, double> P_area_MC_up, Dictionary<int, double> P_area_MC_right, Dictionary<int, double> P_area_MC_bottom, Dictionary<int, double> P_area_MC_left)
         {
             List<int> user_area_lack = new List<int>();
             int[] Pid = P_area_MC_up.Keys.ToArray<int>();
             for (int i = 0; i < Pid.Length; i++)
             {
-                if(P_area_MC_up[Pid[i]] > area_MC[0])
+                if(convert(P_area_MC_up[Pid[i]], level, true) > convert(area_MC[0], level, true))
                 {
                     user_area_lack.Add(Pid[i]);
-                }else if(P_area_MC_right[Pid[i]] > area_MC[1])
+                }else if(convert(P_area_MC_right[Pid[i]], level, true) > convert(area_MC[1], level, true))
                 {
                     user_area_lack.Add(Pid[i]);
-                }else if(P_area_MC_bottom[Pid[i]] < area_MC[2])
+                }else if(convert(P_area_MC_bottom[Pid[i]], level, true) < convert(area_MC[2], level, true))
                 {
                     user_area_lack.Add(Pid[i]);
-                }else if(P_area_MC_left[Pid[i]] < area_MC[3])
+                }else if(convert(P_area_MC_left[Pid[i]], level, true) < convert(area_MC[3], level, true))
                 {
                     user_area_lack.Add(Pid[i]);
                 }
@@ -477,12 +577,12 @@ namespace MapMaker.MapHelper
         /// <param name="P_area_MC_right">点区域right</param>
         /// <param name="_P_area_MC_bottom">点区域bottom</param>
         /// <param name="_P_area_MC_left">点区域left</param>
-        public List<int> checkCoverPs(Dictionary<int, double> P_area_MC_up, Dictionary<int, double> P_area_MC_right, Dictionary<int, double> _P_area_MC_bottom, Dictionary<int, double> _P_area_MC_left)
+        public List<int> checkCoverPs(int level, Dictionary<int, double> P_area_MC_up, Dictionary<int, double> P_area_MC_right, Dictionary<int, double> P_area_MC_bottom, Dictionary<int, double> P_area_MC_left)
         {
             List<int> user_area_cover = new List<int>();
             int[] Pid = P_area_MC_up.Keys.ToArray<int>();
             List < int > Pid_normal = new List<int>();
-
+            
             for (int i = 0; i < Pid.Length; i++)
             {
                 if (!user_area_cover.Contains(Pid[i]))
@@ -492,19 +592,19 @@ namespace MapMaker.MapHelper
                     {
                         if (i != j && !Pid_normal.Contains(Pid[i]))
                         {
-                            if (P_area_MC_up[Pid[i]] < P_area_MC_bottom[Pid[j]])
+                            if (convert(P_area_MC_up[Pid[i]], level, true) <= convert(P_area_MC_bottom[Pid[j]], level, true))
                             {
                                 continue;
                             }
-                            if (P_area_MC_right[Pid[i]] < P_area_MC_left[Pid[j]])
+                            if (convert(P_area_MC_right[Pid[i]], level, true) <= convert(P_area_MC_left[Pid[j]], level, true))
                             {
                                 continue;
                             }
-                            if (P_area_MC_bottom[Pid[i]] > P_area_MC_up[Pid[j]])
+                            if (convert(P_area_MC_bottom[Pid[i]], level, true) >= convert(P_area_MC_up[Pid[j]], level, true))
                             {
                                 continue;
                             }
-                            if (P_area_MC_left[Pid[i]] > P_area_MC_right[Pid[j]])
+                            if (convert(P_area_MC_left[Pid[i]], level, true) >= convert(P_area_MC_right[Pid[j]], level, true))
                             {
                                 continue;
                             }
