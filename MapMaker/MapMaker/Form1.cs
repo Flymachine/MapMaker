@@ -20,6 +20,7 @@ namespace MapMaker
     {
         SQLiteConnection conn = new SQLiteConnection("data source=./mapmaker.db");
         SQLiteCommand cmd = new SQLiteCommand();
+        SQLiteHelper sh;
 
         public MainForm1()
         {
@@ -31,9 +32,14 @@ namespace MapMaker
         {
             cmd.Connection = conn;
             conn.Open();
-            SQLiteHelper sh = new SQLiteHelper(cmd);
-            MCObject mco = new MCObject(12958175, 4825923.77, true);
-            MessageBox.Show(mco.Latitude + " , " + mco.Longitude);
+            sh = new SQLiteHelper(cmd);
+            DisplayProjectSet(GetProjectSet(sh, 1));
+            DisplayProjects(sh);
+            DisplayPoints(sh, "1");
+            DisplayMapstyleSet(sh);
+            DisplayFonts(sh);
+
+
             //geckoWebBrowser1.Navigate("file:///E:/git/map.html");
         }
 
@@ -82,13 +88,25 @@ namespace MapMaker
             numericUpDown3.Value = Convert.ToInt32(dic["bleedr"]);
             numericUpDown4.Value = Convert.ToInt32(dic["bleedb"]);
             numericUpDown5.Value = Convert.ToInt32(dic["bleedl"]);
+            checkBox7.Checked = Convert.ToBoolean(Convert.ToInt32(dic["ucenter"]));
             numericUpDown6.Value = Convert.ToDecimal(dic["usercenterx"]);
             numericUpDown7.Value = Convert.ToDecimal(dic["usercentery"]);
+            checkBox8.Checked = Convert.ToBoolean(Convert.ToInt32(dic["upixel"]));
             numericUpDown8.Value = Convert.ToInt32(dic["userpxx"]);
             numericUpDown9.Value = Convert.ToInt32(dic["userpxy"]);
             numericUpDown10.Value = Convert.ToInt32(dic["cutpxx"]);
             numericUpDown11.Value = Convert.ToInt32(dic["cutpxy"]);
             numericUpDown12.Value = Convert.ToInt32(dic["delay"]);
+        }
+        private void DisplayProjects(SQLiteHelper sh)
+        {
+            DataTable dt = sh.Select("select * from project;");
+            foreach (DataColumn col in dt.Columns)
+            {
+                string colName = col.ColumnName;
+                col.ColumnName = ToChineseName(colName);
+            }
+            dataGridView3.DataSource = dt;
         }
         private void SaveProjectSet(SQLiteHelper sh)
         {
@@ -99,19 +117,35 @@ namespace MapMaker
             dicData["bleedr"] = numericUpDown3.Value;
             dicData["bleedb"] = numericUpDown4.Value;
             dicData["bleedl"] = numericUpDown5.Value;
+            dicData["ucenter"] = Convert.ToInt32(checkBox7.Checked).ToString();
             dicData["usercenterx"] = numericUpDown6.Value;
             dicData["usercentery"] = numericUpDown7.Value;
+            dicData["upixel"] = Convert.ToInt32(checkBox8.Checked).ToString();
             dicData["userpxx"] = numericUpDown8.Value;
             dicData["userpxy"] = numericUpDown9.Value;
             dicData["cutpxx"] = numericUpDown10.Value;
             dicData["cutpxy"] = numericUpDown11.Value;
             dicData["delay"] = numericUpDown12.Value;
-
-            sh.Update("project", dicData, "projectid", textBox8.Text.Trim());
+            if (textBox8.Text.Trim() == "" || textBox8.Text.Trim() == "0")
+            {
+                sh.Insert("project", dicData);
+            }
+            else
+            {
+                sh.Update("project", dicData, "projectid", textBox8.Text.Trim());
+            }
         }
         private Dictionary<string, string> GetProjectSet(SQLiteHelper sh, int id)
         {
-            DataTable dt = sh.Select("select * from project where projectid = " + id + ";");
+            DataTable dt;
+            if (id == 0)
+            {
+                dt = sh.Select("select * from project where projectid = max(projectid);");
+            }
+            else
+            {
+                dt = sh.Select("select * from project where projectid = " + id + ";");
+            }
             var dic = new Dictionary<string, string>();
             if (dt == null)
             {
@@ -124,8 +158,10 @@ namespace MapMaker
             dic["bleedr"] = dt.Rows[0]["bleedr"].ToString();
             dic["bleedb"] = dt.Rows[0]["bleedb"].ToString();
             dic["bleedl"] = dt.Rows[0]["bleedl"].ToString();
+            dic["upixel"] = dt.Rows[0]["upixel"].ToString();
             dic["userpxx"] = dt.Rows[0]["userpxx"].ToString();
             dic["userpxy"] = dt.Rows[0]["userpxy"].ToString();
+            dic["ucenter"] = dt.Rows[0]["ucenter"].ToString();
             dic["usercenterx"] = dt.Rows[0]["usercenterx"].ToString();
             dic["usercentery"] = dt.Rows[0]["usercentery"].ToString();
             dic["cutpxx"] = dt.Rows[0]["cutpxx"].ToString();
@@ -133,14 +169,18 @@ namespace MapMaker
             dic["delay"] = dt.Rows[0]["delay"].ToString();
             return dic;
         }
+        private void DelProjectSet(SQLiteHelper sh, int projectid)
+        {
+            sh.Execute("delete from project where projectid = " + projectid + ";");
+        }
         #endregion
 
         #region Point设置相关
         private void DisplayPointSet(Dictionary<string, string> dic)
         {
             textBox9.Text = dic["pointid"];
-            textBox2.Text = dic["title"];
-            textBox3.Text = dic["content"];
+            textBox2.Text = htmldecode(dic["title"]);
+            textBox3.Text = htmldecode(dic["content"]);
             numericUpDown13.Value = Convert.ToDecimal(dic["pointx"]);
             numericUpDown14.Value = Convert.ToDecimal(dic["pointy"]);
             checkBox3.Checked = Convert.ToBoolean(Convert.ToInt32(dic["isopen"]));
@@ -168,64 +208,57 @@ namespace MapMaker
         }
         private void SavePointSet(SQLiteHelper sh)
         {
-            if(textBox9.Text.Trim() == ""|| textBox9.Text.Trim() == "0")
+            var dic = new Dictionary<string, object>();
+            dic["title"] = htmlencode(textBox2.Text);
+            dic["content"] = htmlencode(textBox3.Text);
+            dic["pointx"] = numericUpDown13.Value;
+            dic["pointy"] = numericUpDown14.Value;
+            dic["isopen"] = Convert.ToInt32(checkBox3.Checked);
+            dic["icon"] = textBox4.Text.Trim();
+            dic["font"] = comboBox1.Text.Trim();
+            dic["skewx"] = numericUpDown15.Value;
+            dic["skewy"] = numericUpDown16.Value;
+            dic["switch"] = Convert.ToInt32(checkBox1.Checked);
+            dic["stealth"] = Convert.ToInt32(checkBox2.Checked);
+            dic["bleedu"] = numericUpDown17.Value;
+            dic["bleedr"] = numericUpDown18.Value;
+            dic["bleedb"] = numericUpDown19.Value;
+            dic["bleedl"] = numericUpDown20.Value;
+            if (textBox9.Text.Trim() == ""|| textBox9.Text.Trim() == "0")
             {
-                var dic = new Dictionary<string, object>();
-                dic["title"] = textBox2.Text;
-                dic["content"] = textBox3.Text;
-                dic["pointx"] = numericUpDown13.Value;
-                dic["pointy"] = numericUpDown14.Value;
-                dic["isopen"] = Convert.ToInt32(checkBox3.Checked);
-                dic["icon"] = textBox4.Text.Trim();
-                dic["font"] = comboBox1.Text.Trim();
-                dic["skewx"] = numericUpDown15.Value;
-                dic["skewy"] = numericUpDown16.Value;
-                dic["projectid"] = textBox8.Text.Trim();
-                dic["switch"] = Convert.ToInt32(checkBox1.Checked);
-                dic["stealth"] = Convert.ToInt32(checkBox2.Checked);
-                dic["bleedu"] = numericUpDown17.Value;
-                dic["bleedr"] = numericUpDown18.Value;
-                dic["bleedb"] = numericUpDown19.Value;
-                dic["bleedl"] = numericUpDown20.Value;
-
+                if(textBox8.Text.Trim() == "" || textBox8.Text.Trim() == "0")
+                {
+                    MessageBox.Show("项目未保存，无法添加此点，请先保存项目", "警告");
+                    return ;
+                }
+                dic["project"] = textBox8.Text.Trim();
                 sh.Insert("point", dic);
             }
             else
             {
                 int pointid = Convert.ToInt32(textBox9.Text.Trim());
-                var dicData = new Dictionary<string, object>();
-                dicData["title"] = textBox2.Text;
-                dicData["content"] = textBox3.Text;
-                dicData["pointx"] = numericUpDown13.Value;
-                dicData["pointy"] = numericUpDown14.Value;
-                dicData["isopen"] = Convert.ToInt32(checkBox3.Checked);
-                dicData["icon"] = textBox4.Text.Trim();
-                dicData["font"] = comboBox1.Text.Trim();
-                dicData["skewx"] = numericUpDown15.Value;
-                dicData["skewy"] = numericUpDown16.Value;
-                dicData["projectid"] = textBox8.Text.Trim();
-                dicData["switch"] = Convert.ToInt32(checkBox1.Checked);
-                dicData["stealth"] = Convert.ToInt32(checkBox2.Checked);
-                dicData["bleedu"] = numericUpDown17.Value;
-                dicData["bleedr"] = numericUpDown18.Value;
-                dicData["bleedb"] = numericUpDown19.Value;
-                dicData["bleedl"] = numericUpDown20.Value;
-
-
-                sh.Update("point", dicData, "pointid", pointid);
+                sh.Update("point", dic, "pointid", pointid);
             }
         }
         private Dictionary<string, string> GetPointSet(SQLiteHelper sh, int pointid)
         {
-            DataTable dt = sh.Select("select * from point where pointid = " + pointid + ";");
+            DataTable dt;
+            if (pointid == 0)
+            {
+              dt = sh.Select("select * from point where pointid = max(pointid);");
+            }
+            else
+            {
+                dt = sh.Select("select * from point where pointid = " + pointid + ";");
+            }
             var dic = new Dictionary<string, string>();
             if (dt == null)
             {
                 return dic;
             }
             dic["pointid"] = pointid.ToString();
-            dic["title"] = dt.Rows[0]["title"].ToString();
-            dic["content"] = dt.Rows[0]["content"].ToString();
+            dic["title"] = htmldecode(dt.Rows[0]["title"].ToString());
+            dic["content"] = htmldecode(dt.Rows[0]["content"].ToString());
             dic["pointx"] = dt.Rows[0]["pointx"].ToString();
             dic["pointy"] = dt.Rows[0]["pointy"].ToString();
             dic["isopen"] = dt.Rows[0]["isopen"].ToString();
@@ -270,19 +303,19 @@ namespace MapMaker
             textBox12.Text = dicData1["key"];
             label15.Text = dicData1["title"];
             textBox5.Text = dicData1["content"];
-            checkBox6.Checked = Convert.ToBoolean(Convert.ToInt32(dicData1["switch"]));
+            checkBox6.Checked = Convert.ToBoolean(Convert.ToInt32(dicData2["switch"]));
 
-            textBox16.Text = dicData1["styleid"];
-            textBox15.Text = dicData1["key"];
-            label29.Text = dicData1["title"];
-            textBox13.Text = dicData1["content"];
-            checkBox4.Checked = Convert.ToBoolean(Convert.ToInt32(dicData1["switch"]));
+            textBox16.Text = dicData2["styleid"];
+            textBox15.Text = dicData2["key"];
+            label29.Text = dicData2["title"];
+            textBox13.Text = dicData2["content"];
+            checkBox4.Checked = Convert.ToBoolean(Convert.ToInt32(dicData2["switch"]));
 
-            textBox18.Text = dicData1["styleid"];
-            textBox17.Text = dicData1["key"];
-            label30.Text = dicData1["title"];
-            textBox14.Text = dicData1["content"];
-            checkBox5.Checked = Convert.ToBoolean(Convert.ToInt32(dicData1["switch"]));
+            textBox18.Text = dicData3["styleid"];
+            textBox17.Text = dicData3["key"];
+            label30.Text = dicData3["title"];
+            textBox14.Text = dicData3["content"];
+            checkBox5.Checked = Convert.ToBoolean(Convert.ToInt32(dicData3["switch"]));
         }
         private void SaveMapstyleSet(SQLiteHelper sh)
         {
@@ -352,29 +385,30 @@ namespace MapMaker
         }
         private void SaveFontSet(SQLiteHelper sh)
         {
+            var dic = new Dictionary<string, object>();
+            dic["title"] = textBox6.Text;
+            dic["fontSize"] = numericUpDown21.Value;
+            dic["content"] = textBox7.Text;
             if (textBox9.Text.Trim() == "" || textBox9.Text.Trim() == "0")
             {
-                var dic = new Dictionary<string, object>();
-                dic["title"] = textBox6.Text;
-                dic["fontSize"] = numericUpDown21.Value;
-                dic["content"] = textBox7.Text;
-
                 sh.Insert("font", dic);
             }
             else
             {
                 int fontid = Convert.ToInt32(textBox10.Text.Trim());
-                var dicData = new Dictionary<string, object>();
-                dicData["title"] = textBox6.Text;
-                dicData["fontSize"] = numericUpDown21.Value;
-                dicData["content"] = textBox7.Text;
-
-                sh.Update("font", dicData, "fontid", fontid);
+                sh.Update("font", dic, "fontid", fontid);
             }
         }
         private Dictionary<string, string> GetFontSet(SQLiteHelper sh, int id)
         {
-            DataTable dt = sh.Select("select * from font where fontid = " + id + ";");
+            DataTable dt;
+            if (id == 0)
+            {
+                dt = sh.Select("select * from font where fontid = max(fontid);");
+            }else
+            {
+                dt = sh.Select("select * from font where fontid = " + id + ";");
+            }
             var dic = new Dictionary<string, string>();
             if (dt == null)
             {
@@ -393,6 +427,18 @@ namespace MapMaker
         #endregion
 
         #region 其他
+        public static string htmlencode(string str)
+        {
+            str.Replace(" ", " ");
+            str.Replace("　", " ");
+            str.Replace("/n", "<br/>");
+            return str;
+        }
+        public static string htmldecode(string str)
+        {
+            str.Replace("<br/>", "/n");
+            return str;
+        }
         private string ToChineseName(string en)
         {
             string cn = en;
@@ -402,6 +448,9 @@ namespace MapMaker
                     cn = "序号";
                     break;
                 case "fontid":
+                    cn = "序号";
+                    break;
+                case "projectid":
                     cn = "序号";
                     break;
                 case "title":
@@ -461,6 +510,39 @@ namespace MapMaker
                 case "fontSize":
                     cn = "fontSize(尺寸)";
                     break;
+                case "level":
+                    cn = "等级";
+                    break;
+                case "upixel":
+                    cn = "设尺寸";
+                    break;
+                case "userpxx":
+                    cn = "设宽";
+                    break;
+                case "userpxy":
+                    cn = "设高";
+                    break;
+                case "ucenter":
+                    cn = "设中心";
+                    break;
+                case "usercenterx":
+                    cn = "设经度";
+                    break;
+                case "usercentery":
+                    cn = "设纬度";
+                    break;
+                case "cut":
+                    cn = "整切";
+                    break;
+                case "cutpxx":
+                    cn = "切宽";
+                    break;
+                case "cutpxy":
+                    cn = "切高";
+                    break;
+                case "delay":
+                    cn = "延迟";
+                    break;
 
                 default:
                     cn = en;
@@ -470,6 +552,7 @@ namespace MapMaker
         }
         #endregion
 
+        #region 设置用键
         private void button15_Click(object sender, EventArgs e)
         {
             string resultFile = textBox4.Text;
@@ -501,5 +584,261 @@ namespace MapMaker
             textBox4.Text = resultFile;
             pictureBox1.ImageLocation = resultFile;
         }
+
+        private void button25_Click(object sender, EventArgs e)
+        {
+            MessageBox.Show("保存新项目仍需点击“添加”，为了方便建点，请及时保存", "提示");
+            textBox8.Text = "";
+        }
+
+        private void button30_Click(object sender, EventArgs e)
+        {
+            SaveProjectSet(sh);
+            DisplayProjectSet(GetProjectSet(sh, Convert.ToInt32(textBox8.Text.Trim())));
+            DisplayProjects(sh);
+            MessageBox.Show("保存成功", "提示");
+        }
+
+        private void button28_Click(object sender, EventArgs e)
+        {
+            int a = dataGridView3.CurrentRow.Index;
+            DisplayProjectSet(GetProjectSet(sh, Convert.ToInt32(dataGridView3.Rows[a].Cells["序号"].Value)));
+        }
+
+        private void button29_Click(object sender, EventArgs e)
+        {
+            DialogResult RSS = MessageBox.Show(this, "确定要删除全部选中行数据吗？", "提示", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
+            switch (RSS)
+            {
+                case DialogResult.Yes:
+                    for (int i = this.dataGridView3.SelectedRows.Count; i > 0; i--)
+                    {
+                        int ID = Convert.ToInt32(dataGridView3.SelectedRows[i - 1].Cells[0].Value);
+                        dataGridView3.Rows.RemoveAt(dataGridView3.SelectedRows[i - 1].Index);
+                        //使用获得的ID删除数据库的数据
+                        DelProjectSet(sh, Convert.ToInt32(ID));
+                    }
+                    MessageBox.Show("成功删除选中行数据！");
+                    break;
+                case DialogResult.No:
+                    break;
+            }
+        }
+        private void button4_Click(object sender, EventArgs e)
+        {
+            SavePointSet(sh);
+            textBox9.Text = "";
+            textBox2.Text = "";
+            textBox3.Text = "";
+            numericUpDown13.Value = 0;
+            numericUpDown14.Value = 0;
+            DisplayPoints(sh, textBox8.Text.Trim()=="" ? "0" : textBox8.Text.Trim());
+            MessageBox.Show("保存成功", "提示");
+        }
+
+        private void button22_Click(object sender, EventArgs e)
+        {
+            MessageBox.Show("保存新点仍需点击“添加”", "提示");
+            textBox9.Text = "";
+        }
+
+        private void button10_Click(object sender, EventArgs e)
+        {
+            int a = dataGridView1.CurrentRow.Index;
+            DisplayPointSet(GetPointSet(sh, Convert.ToInt32(dataGridView1.Rows[a].Cells["序号"].Value)));
+        }
+
+        private void button5_Click(object sender, EventArgs e)
+        {
+            DialogResult RSS = MessageBox.Show(this, "确定要删除全部选中行数据吗？", "提示", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
+            switch (RSS)
+            {
+                case DialogResult.Yes:
+                    for (int i = this.dataGridView1.SelectedRows.Count; i > 0; i--)
+                    {
+                        int ID = Convert.ToInt32(dataGridView1.SelectedRows[i - 1].Cells[0].Value);
+                        dataGridView1.Rows.RemoveAt(dataGridView1.SelectedRows[i - 1].Index);
+                        //使用获得的ID删除数据库的数据
+                        DelPointSet(sh, Convert.ToInt32(ID));
+                    }
+                    MessageBox.Show("成功删除选中行数据！");
+                    break;
+                case DialogResult.No:
+                    break;
+            }
+        }
+
+        private void button6_Click(object sender, EventArgs e)
+        {
+            DialogResult RSS = MessageBox.Show(this, "确定要将选中点全部生效吗？", "提示", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
+            switch (RSS)
+            {
+                case DialogResult.Yes:
+                    for (int i = this.dataGridView1.SelectedRows.Count; i > 0; i--)
+                    {
+                        int ID = Convert.ToInt32(dataGridView1.SelectedRows[i - 1].Cells[0].Value);
+                        dataGridView1.Rows.RemoveAt(dataGridView1.SelectedRows[i - 1].Index);
+                        //使用获得的ID更改数据库的数据
+                        SwitchPointSet(sh, Convert.ToInt32(ID), 0);
+                    }
+                    MessageBox.Show("成功更改选中点数据！");
+                    break;
+                case DialogResult.No:
+                    break;
+            }
+        }
+
+        private void button7_Click(object sender, EventArgs e)
+        {
+            DialogResult RSS = MessageBox.Show(this, "确定要将选中点全部失效码？", "提示", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
+            switch (RSS)
+            {
+                case DialogResult.Yes:
+                    for (int i = this.dataGridView1.SelectedRows.Count; i > 0; i--)
+                    {
+                        int ID = Convert.ToInt32(dataGridView1.SelectedRows[i - 1].Cells[0].Value);
+                        dataGridView1.Rows.RemoveAt(dataGridView1.SelectedRows[i - 1].Index);
+                        //使用获得的ID更改数据库的数据
+                        SwitchPointSet(sh, Convert.ToInt32(ID), 1);
+                    }
+                    MessageBox.Show("成功更改选中点数据！");
+                    break;
+                case DialogResult.No:
+                    break;
+            }
+        }
+
+        private void button8_Click(object sender, EventArgs e)
+        {
+            DialogResult RSS = MessageBox.Show(this, "确定要将选中点全部隐形码？", "提示", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
+            switch (RSS)
+            {
+                case DialogResult.Yes:
+                    for (int i = this.dataGridView1.SelectedRows.Count; i > 0; i--)
+                    {
+                        int ID = Convert.ToInt32(dataGridView1.SelectedRows[i - 1].Cells[0].Value);
+                        dataGridView1.Rows.RemoveAt(dataGridView1.SelectedRows[i - 1].Index);
+                        //使用获得的ID更改数据库的数据
+                        StealthPointSet(sh, Convert.ToInt32(ID), 1);
+                    }
+                    MessageBox.Show("成功更改选中点数据！");
+                    break;
+                case DialogResult.No:
+                    break;
+            }
+        }
+
+        private void button9_Click(object sender, EventArgs e)
+        {
+            DialogResult RSS = MessageBox.Show(this, "确定要将选中点全部显形码？", "提示", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
+            switch (RSS)
+            {
+                case DialogResult.Yes:
+                    for (int i = this.dataGridView1.SelectedRows.Count; i > 0; i--)
+                    {
+                        int ID = Convert.ToInt32(dataGridView1.SelectedRows[i - 1].Cells[0].Value);
+                        dataGridView1.Rows.RemoveAt(dataGridView1.SelectedRows[i - 1].Index);
+                        //使用获得的ID更改数据库的数据
+                        StealthPointSet(sh, Convert.ToInt32(ID), 0);
+                    }
+                    MessageBox.Show("成功更改选中点数据！");
+                    break;
+                case DialogResult.No:
+                    break;
+            }
+        }
+
+        private void button21_Click(object sender, EventArgs e)
+        {
+            SaveMapstyleSet(sh);
+            MessageBox.Show("保存成功", "提示");
+        }
+
+        private void button14_Click(object sender, EventArgs e)
+        {
+            SaveFontSet(sh);
+            textBox6.Text = "";
+            textBox10.Text = "";
+            DisplayFonts(sh);
+            MessageBox.Show("保存成功", "提示");
+        }
+
+        private void button12_Click(object sender, EventArgs e)
+        {
+            int a = dataGridView2.CurrentRow.Index;
+            DisplayFontSet(GetFontSet(sh, Convert.ToInt32(dataGridView2.Rows[a].Cells["序号"].Value)));
+        }
+
+        private void button13_Click(object sender, EventArgs e)
+        {
+            DialogResult RSS = MessageBox.Show(this, "确定要删除全部选中行数据吗？", "提示", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
+            switch (RSS)
+            {
+                case DialogResult.Yes:
+                    for (int i = this.dataGridView2.SelectedRows.Count; i > 0; i--)
+                    {
+                        int ID = Convert.ToInt32(dataGridView2.SelectedRows[i - 1].Cells[0].Value);
+                        dataGridView2.Rows.RemoveAt(dataGridView2.SelectedRows[i - 1].Index);
+                        //使用获得的ID删除数据库的数据
+                        DelFontSet(sh, ID);
+                    }
+                    MessageBox.Show("成功删除选中行数据！");
+                    break;
+                case DialogResult.No:
+                    break;
+            }
+        }
+
+        private void button24_Click(object sender, EventArgs e)
+        {
+            MessageBox.Show("保存新字体仍需点击“添加”", "提示");
+            textBox10.Text = "";
+        }
+
+        #endregion
+
+        private void button27_Click(object sender, EventArgs e)
+        {
+            //字体部分
+            Dictionary<string, string> font = GetFontSet(sh, Convert.ToInt32(comboBox1.Text.Trim()));
+            int fontSize = Convert.ToInt32(font["fontSize"].Trim());
+            int titleSize = textBox2.Text.Length ;
+            string[] content = textBox3.Lines;
+            int con_height = content.Length;
+            int con_max_width = titleSize;
+            foreach (string line in content)
+            {
+                if(line.Length > con_max_width) con_max_width = line.Length ;
+            }
+            int textSize_h = fontSize + 2;
+            int textSize_w = titleSize * fontSize + 2;
+            if (checkBox3.Checked)
+            {
+                textSize_h = (con_height + 2) * fontSize + 2;
+                textSize_w = con_max_width * fontSize + 2;
+            }
+
+            //图标部分
+            int imgSize_h = pictureBox1.Image ==null ? 25 : pictureBox1.Image.Height;
+            int imgSize_w = pictureBox1.Image == null ? 10 : pictureBox1.Image.Width / 2;
+            //偏移部分
+            int skewSize_w = Convert.ToInt32(numericUpDown15.Value);
+            int skewSize_h= Convert.ToInt32(numericUpDown16.Value);
+            //额外部分
+            int exSize_w = 0;
+            int exSize_h = 0;
+            //整合
+            int[] x = new int[] { -imgSize_w, imgSize_w, -imgSize_w + skewSize_w, -imgSize_w + skewSize_w + textSize_w };
+            int[] y = new int[] { 0, imgSize_h , imgSize_h - skewSize_h , imgSize_h - skewSize_h - textSize_h };
+            int up = y.Max() + exSize_h;
+            int right = x.Max() + exSize_w;
+            int bottom = - y.Min() + exSize_h;
+            int left = - x.Min() + exSize_w;
+            numericUpDown17.Value = up;
+            numericUpDown18.Value = right;
+            numericUpDown19.Value = bottom;
+            numericUpDown20.Value = left;
+        }
+
     }
 }

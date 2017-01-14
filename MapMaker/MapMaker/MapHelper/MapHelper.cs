@@ -256,6 +256,9 @@ namespace MapMaker.MapHelper
                 return _Ps_LL_and_bleed;
             }
         }
+        #endregion
+
+        #region 类初始化
         /// <summary>  
         ///   地图制作助手（缺少必要参数）
         /// </summary>
@@ -268,51 +271,65 @@ namespace MapMaker.MapHelper
         /// </summary>
         public MapHelper(int user_level, int[] area_bleed_Pixel, int[] cut_area_pixel, Dictionary<int, double[]> Ps_LL_and_bleed)
         {
-            level = user_level;
-            _area_bleed_Pixel = area_bleed_Pixel;
-            _cut_area_pixel = cut_area_pixel;
-            _Ps_LL_and_bleed = Ps_LL_and_bleed;
-            //以下运行代码
-            covertP_LL2MC(_Ps_LL_and_bleed, level);
-            _area_bleed_MC = new double[] { Math.Abs(convert(_area_bleed_Pixel[0], level)), Math.Abs(convert(_area_bleed_Pixel[1], level)) };
-            _area_MC = sumPsArea(_area_bleed_MC, _P_area_MC_up, _P_area_MC_right, _P_area_MC_bottom, _P_area_MC_left);
-            double[] auto_center_LL = convertArea_MC2P_LL(_area_MC);
-            _center_x_LL = auto_center_LL[0];
-            _center_y_LL = auto_center_LL[1];
-            _user_center_LL = auto_center_LL;
-            int[] auto_area_pixel = convertAreaMC2Pixel(_area_MC, level);
-            _area_pixel_x = auto_area_pixel[0];
-            _area_pixel_y = auto_area_pixel[1];
-            _user_area_pixel = auto_area_pixel;
-
+            try
+            {
+                level = user_level;
+                _area_bleed_Pixel = area_bleed_Pixel;
+                _cut_area_pixel = cut_area_pixel;
+                _Ps_LL_and_bleed = Ps_LL_and_bleed;
+                //以下运行代码
+                covertP_LL2MC(_Ps_LL_and_bleed, level);
+                _area_bleed_MC = new double[] { Math.Abs(convert(_area_bleed_Pixel[0], level)), Math.Abs(convert(_area_bleed_Pixel[1], level)) };
+                _area_MC = sumPsArea(_area_bleed_MC, _P_area_MC_up, _P_area_MC_right, _P_area_MC_bottom, _P_area_MC_left);
+                double[] auto_center_LL = convertArea_MC2P_LL(_area_MC);
+                _center_x_LL = auto_center_LL[0];
+                _center_y_LL = auto_center_LL[1];
+                _user_center_LL = auto_center_LL;
+                int[] auto_area_pixel = convertAreaMC2Pixel(_area_MC, level);
+                _area_pixel_x = auto_area_pixel[0];
+                _area_pixel_y = auto_area_pixel[1];
+                _user_area_pixel = auto_area_pixel;
+            }
+            catch (Exception)
+            {
+                throw;
+            }
         }
         /// <summary>  
         ///   地图制作助手（自设中心点和地图像素尺寸）
         /// </summary>
         public MapHelper(int user_level, int[] area_bleed_Pixel, int[] cut_area_pixel, Dictionary<int, double[]> Ps_LL_and_bleed, double[] user_center_LL, int[] user_area_pixel)
         {
-            level = user_level;
-            _area_bleed_Pixel = area_bleed_Pixel;
-            _cut_area_pixel = cut_area_pixel;
-            _Ps_LL_and_bleed = Ps_LL_and_bleed;
-            _user_center_LL = user_center_LL;
-            _user_area_pixel = user_area_pixel;
-            //以下运行代码
-            covertP_LL2MC(_Ps_LL_and_bleed, level);
-            _area_bleed_MC = new double[] { Math.Abs(convert(_area_bleed_Pixel[0], level)), Math.Abs(convert(_area_bleed_Pixel[1], level)) };
-            _area_MC = sumPsArea(_area_bleed_MC, _P_area_MC_up, _P_area_MC_right, _P_area_MC_bottom, _P_area_MC_left);
-            double[] auto_center_LL = convertArea_MC2P_LL(_area_MC);
-            _center_x_LL = auto_center_LL[0];
-            _center_y_LL = auto_center_LL[1];
+            try
+            {
+                level = user_level;
+                _area_bleed_Pixel = area_bleed_Pixel;
+                _cut_area_pixel = cut_area_pixel;
+                _Ps_LL_and_bleed = Ps_LL_and_bleed;
+                _user_center_LL = user_center_LL;
+                _user_area_pixel = user_area_pixel;
+                //以下运行代码
+                covertP_LL2MC(_Ps_LL_and_bleed, level);
+                _area_bleed_MC = new double[] { Math.Abs(convert(_area_bleed_Pixel[0], level)), Math.Abs(convert(_area_bleed_Pixel[1], level)) };
+                _area_MC = sumPsArea(_area_bleed_MC, _P_area_MC_up, _P_area_MC_right, _P_area_MC_bottom, _P_area_MC_left);
+                double[] auto_center_LL = convertArea_MC2P_LL(_area_MC);
+                _center_x_LL = auto_center_LL[0];
+                _center_y_LL = auto_center_LL[1];
 
-            _area_MC = convertArea2UserArea(_user_center_LL, _area_MC);
-            int[] auto_area_pixel = convertAreaMC2Pixel(_area_MC, level);
-            _area_pixel_x = auto_area_pixel[0];
-            _area_pixel_y = auto_area_pixel[1];
+                _area_MC = convertArea2UserArea(_user_center_LL, _area_MC);
+                int[] auto_area_pixel = convertAreaMC2Pixel(_area_MC, level);
+                _area_pixel_x = auto_area_pixel[0];
+                _area_pixel_y = auto_area_pixel[1];
 
-            _area_MC = convertAreaPixel2MC(_user_area_pixel, level, _area_MC);
+                _area_MC = convertAreaPixel2MC(_user_area_pixel, level, _area_MC);
+            }
+            catch (Exception)
+            {
+                throw;
+            }
         }
         #endregion
+
         #region 私有方法
         /// <summary>  
         ///   生成点的平面坐标，并录入类属性
@@ -340,6 +357,8 @@ namespace MapMaker.MapHelper
             }
         }
         #endregion
+
+        #region 公有方法
         /// <summary>  
         ///   像素/MC平面坐标互转
         /// </summary>  
@@ -528,17 +547,24 @@ namespace MapMaker.MapHelper
         /// <param name="center_LL">中心点坐标</param>
         public double[] convertAreaPixel2MC(int[] user_area_pixel, int level, double[] area_MC)
         {
-            double area_MC_x, area_MC_y;
-            double[] center_MC, user_area_MC = new double[4];
-            area_MC_x = Math.Abs(convert(user_area_pixel[0], level));
-            area_MC_y = Math.Abs(convert(user_area_pixel[1], level));
-            center_MC = new double[] { (area_MC[1] + area_MC[3]) / 2, (area_MC[0] + area_MC[2]) / 2 };
-            user_area_MC[0] = center_MC[1] + (area_MC_y / 2);
-            user_area_MC[1] = center_MC[0] + (area_MC_x / 2);
-            user_area_MC[2] = center_MC[1] - (area_MC_y / 2);
-            user_area_MC[3] = center_MC[0] - (area_MC_x / 2);
+            try
+            {
+                double area_MC_x, area_MC_y;
+                double[] center_MC, user_area_MC = new double[4];
+                area_MC_x = Math.Abs(convert(user_area_pixel[0], level));
+                area_MC_y = Math.Abs(convert(user_area_pixel[1], level));
+                center_MC = new double[] { (area_MC[1] + area_MC[3]) / 2, (area_MC[0] + area_MC[2]) / 2 };
+                user_area_MC[0] = center_MC[1] + (area_MC_y / 2);
+                user_area_MC[1] = center_MC[0] + (area_MC_x / 2);
+                user_area_MC[2] = center_MC[1] - (area_MC_y / 2);
+                user_area_MC[3] = center_MC[0] - (area_MC_x / 2);
 
-            return user_area_MC;
+                return user_area_MC;
+            }
+            catch (Exception)
+            {
+                throw;
+            }
         }
         /// <summary>  
         ///   检查漏点，返回漏点数组
@@ -550,25 +576,35 @@ namespace MapMaker.MapHelper
         /// <param name="_P_area_MC_left">点区域left</param>
         public List<int> checkLackPs(double[] area_MC, int level, Dictionary<int, double> P_area_MC_up, Dictionary<int, double> P_area_MC_right, Dictionary<int, double> P_area_MC_bottom, Dictionary<int, double> P_area_MC_left)
         {
-            List<int> user_area_lack = new List<int>();
-            int[] Pid = P_area_MC_up.Keys.ToArray<int>();
-            for (int i = 0; i < Pid.Length; i++)
+            try
             {
-                if(convert(P_area_MC_up[Pid[i]], level, true) > convert(area_MC[0], level, true))
+                List<int> user_area_lack = new List<int>();
+                int[] Pid = P_area_MC_up.Keys.ToArray<int>();
+                for (int i = 0; i < Pid.Length; i++)
                 {
-                    user_area_lack.Add(Pid[i]);
-                }else if(convert(P_area_MC_right[Pid[i]], level, true) > convert(area_MC[1], level, true))
-                {
-                    user_area_lack.Add(Pid[i]);
-                }else if(convert(P_area_MC_bottom[Pid[i]], level, true) < convert(area_MC[2], level, true))
-                {
-                    user_area_lack.Add(Pid[i]);
-                }else if(convert(P_area_MC_left[Pid[i]], level, true) < convert(area_MC[3], level, true))
-                {
-                    user_area_lack.Add(Pid[i]);
+                    if (convert(P_area_MC_up[Pid[i]], level, true) > convert(area_MC[0], level, true))
+                    {
+                        user_area_lack.Add(Pid[i]);
+                    }
+                    else if (convert(P_area_MC_right[Pid[i]], level, true) > convert(area_MC[1], level, true))
+                    {
+                        user_area_lack.Add(Pid[i]);
+                    }
+                    else if (convert(P_area_MC_bottom[Pid[i]], level, true) < convert(area_MC[2], level, true))
+                    {
+                        user_area_lack.Add(Pid[i]);
+                    }
+                    else if (convert(P_area_MC_left[Pid[i]], level, true) < convert(area_MC[3], level, true))
+                    {
+                        user_area_lack.Add(Pid[i]);
+                    }
                 }
+                return user_area_lack.Distinct().ToList();
             }
-            return user_area_lack.Distinct().ToList();
+            catch (Exception)
+            {
+                throw;
+            }
         }
         /// <summary>  
         ///   检查重叠点，返回重叠点数组
@@ -579,49 +615,56 @@ namespace MapMaker.MapHelper
         /// <param name="_P_area_MC_left">点区域left</param>
         public List<int> checkCoverPs(int level, Dictionary<int, double> P_area_MC_up, Dictionary<int, double> P_area_MC_right, Dictionary<int, double> P_area_MC_bottom, Dictionary<int, double> P_area_MC_left)
         {
-            List<int> user_area_cover = new List<int>();
-            int[] Pid = P_area_MC_up.Keys.ToArray<int>();
-            List < int > Pid_normal = new List<int>();
-            
-            for (int i = 0; i < Pid.Length; i++)
+            try
             {
-                if (!user_area_cover.Contains(Pid[i]))
+                List<int> user_area_cover = new List<int>();
+                int[] Pid = P_area_MC_up.Keys.ToArray<int>();
+                List<int> Pid_normal = new List<int>();
+
+                for (int i = 0; i < Pid.Length; i++)
                 {
-                    bool cover = false;
-                    for (int j = 0; j < Pid.Length; j++)
+                    if (!user_area_cover.Contains(Pid[i]))
                     {
-                        if (i != j && !Pid_normal.Contains(Pid[i]))
+                        bool cover = false;
+                        for (int j = 0; j < Pid.Length; j++)
                         {
-                            if (convert(P_area_MC_up[Pid[i]], level, true) <= convert(P_area_MC_bottom[Pid[j]], level, true))
+                            if (i != j && !Pid_normal.Contains(Pid[i]))
                             {
-                                continue;
+                                if (convert(P_area_MC_up[Pid[i]], level, true) <= convert(P_area_MC_bottom[Pid[j]], level, true))
+                                {
+                                    continue;
+                                }
+                                if (convert(P_area_MC_right[Pid[i]], level, true) <= convert(P_area_MC_left[Pid[j]], level, true))
+                                {
+                                    continue;
+                                }
+                                if (convert(P_area_MC_bottom[Pid[i]], level, true) >= convert(P_area_MC_up[Pid[j]], level, true))
+                                {
+                                    continue;
+                                }
+                                if (convert(P_area_MC_left[Pid[i]], level, true) >= convert(P_area_MC_right[Pid[j]], level, true))
+                                {
+                                    continue;
+                                }
+                                cover = true;
+                                user_area_cover.Add(Pid[i]);
+                                user_area_cover.Add(Pid[j]);
                             }
-                            if (convert(P_area_MC_right[Pid[i]], level, true) <= convert(P_area_MC_left[Pid[j]], level, true))
-                            {
-                                continue;
-                            }
-                            if (convert(P_area_MC_bottom[Pid[i]], level, true) >= convert(P_area_MC_up[Pid[j]], level, true))
-                            {
-                                continue;
-                            }
-                            if (convert(P_area_MC_left[Pid[i]], level, true) >= convert(P_area_MC_right[Pid[j]], level, true))
-                            {
-                                continue;
-                            }
-                            cover = true;
-                            user_area_cover.Add(Pid[i]);
-                            user_area_cover.Add(Pid[j]);
                         }
+                        if (!cover)
+                        {
+                            Pid_normal.Add(Pid[i]);
+                        }
+
                     }
-                    if(!cover)
-                    {
-                        Pid_normal.Add(Pid[i]);
-                    }
-                    
+
                 }
-                
+                return user_area_cover.Distinct().ToList();
             }
-            return user_area_cover.Distinct().ToList();
+            catch (Exception)
+            {
+                throw;
+            }
         }
         /// <summary>  
         ///   切片，返回切片的序列号（XY）、像素尺寸、中心点（LL）
@@ -631,70 +674,78 @@ namespace MapMaker.MapHelper
         /// <param name="level">地图等级</param>
         public Dictionary<string, string[]> CutArea2Dic(double[] area_MC, int[] cut_area_pixel, int level)
         {
-            Dictionary<string, string[]> cut_pixel_and_center_LL = new Dictionary<string, string[]>();
-            double cut_area_MC_x, cut_area_MC_y, area_MC_x, area_MC_y, last_cut_MC_x, last_cut_MC_y;
-            int cut_x, cut_y, last_CA_pixel_x, last_CA_pixel_y, cut_x_len, cut_y_len;
-            cut_area_MC_x = Math.Abs(convert(cut_area_pixel[0], level));
-            cut_area_MC_y = Math.Abs(convert(cut_area_pixel[1], level));
-            area_MC_x = area_MC[1] - area_MC[3];
-            area_MC_y = area_MC[0] - area_MC[2];
-            cut_x = Convert.ToInt32(Math.Ceiling(area_MC_x / cut_area_MC_x));
-            cut_y = Convert.ToInt32(Math.Ceiling(area_MC_y / cut_area_MC_y));
-            last_cut_MC_x = area_MC_x - (cut_area_MC_x * (cut_x - 1));
-            last_cut_MC_y = area_MC_y - (cut_area_MC_y * (cut_y - 1));
-            last_CA_pixel_x = Convert.ToInt32(Math.Abs(convert(last_cut_MC_x, level, true)));
-            last_CA_pixel_y = Convert.ToInt32(Math.Abs(convert(last_cut_MC_y, level, true)));
-            cut_x_len = cut_x.ToString().Length;
-            cut_y_len = cut_y.ToString().Length;
-            for (int i = 0; i < cut_x ; i++)
+            try
             {
-                string title_x = i.ToString().PadLeft(cut_x_len, '0');
-                int pixel_x;
-                double[] cut_area_MC = new double[4];
-                if (i == cut_x -1)
+                Dictionary<string, string[]> cut_pixel_and_center_LL = new Dictionary<string, string[]>();
+                double cut_area_MC_x, cut_area_MC_y, area_MC_x, area_MC_y, last_cut_MC_x, last_cut_MC_y;
+                int cut_x, cut_y, last_CA_pixel_x, last_CA_pixel_y, cut_x_len, cut_y_len;
+                cut_area_MC_x = Math.Abs(convert(cut_area_pixel[0], level));
+                cut_area_MC_y = Math.Abs(convert(cut_area_pixel[1], level));
+                area_MC_x = area_MC[1] - area_MC[3];
+                area_MC_y = area_MC[0] - area_MC[2];
+                cut_x = Convert.ToInt32(Math.Ceiling(area_MC_x / cut_area_MC_x));
+                cut_y = Convert.ToInt32(Math.Ceiling(area_MC_y / cut_area_MC_y));
+                last_cut_MC_x = area_MC_x - (cut_area_MC_x * (cut_x - 1));
+                last_cut_MC_y = area_MC_y - (cut_area_MC_y * (cut_y - 1));
+                last_CA_pixel_x = Convert.ToInt32(Math.Abs(convert(last_cut_MC_x, level, true)));
+                last_CA_pixel_y = Convert.ToInt32(Math.Abs(convert(last_cut_MC_y, level, true)));
+                cut_x_len = cut_x.ToString().Length;
+                cut_y_len = cut_y.ToString().Length;
+                for (int i = 0; i < cut_x; i++)
                 {
-                    if(last_CA_pixel_x < 1)
+                    string title_x = i.ToString().PadLeft(cut_x_len, '0');
+                    int pixel_x;
+                    double[] cut_area_MC = new double[4];
+                    if (i == cut_x - 1)
                     {
-                        break;
-                    }
-                    pixel_x = last_CA_pixel_x;
-                    cut_area_MC[1] = area_MC[1];
-                    cut_area_MC[3] = area_MC[1] - last_CA_pixel_x;
-                }
-                else
-                {
-                    pixel_x = cut_area_pixel[0];
-                    cut_area_MC[1] = area_MC[3] + (cut_area_MC_x * (i + 1));
-                    cut_area_MC[3] = area_MC[3] + (cut_area_MC_x * i);
-                }
-                for(int j = 0; j < cut_y; j++)
-                {
-                    string title = title_x + "_" + j.ToString().PadLeft(cut_y_len, '0');
-                    int pixel_y;
-                    if (j == cut_y - 1)
-                    {
-                        if (last_CA_pixel_y < 1)
+                        if (last_CA_pixel_x < 1)
                         {
                             break;
                         }
-                        pixel_y = last_CA_pixel_y;
-                        cut_area_MC[0] = area_MC[2] + last_CA_pixel_y;
-                        cut_area_MC[2] = area_MC[2];
+                        pixel_x = last_CA_pixel_x;
+                        cut_area_MC[1] = area_MC[1];
+                        cut_area_MC[3] = area_MC[1] - last_CA_pixel_x;
                     }
                     else
                     {
-                        pixel_y = cut_area_pixel[1];
-                        cut_area_MC[0] = area_MC[0] - (cut_area_MC_y * j);
-                        cut_area_MC[2] = area_MC[0] - (cut_area_MC_y * (j + 1)); 
+                        pixel_x = cut_area_pixel[0];
+                        cut_area_MC[1] = area_MC[3] + (cut_area_MC_x * (i + 1));
+                        cut_area_MC[3] = area_MC[3] + (cut_area_MC_x * i);
                     }
-                    double[] CA_center_LL = convertArea_MC2P_LL(cut_area_MC);
-                    string[] content = new string[] { pixel_x.ToString(), pixel_y.ToString(), CA_center_LL[0].ToString(), CA_center_LL[1].ToString() };
-                    cut_pixel_and_center_LL.Add(title, content);
+                    for (int j = 0; j < cut_y; j++)
+                    {
+                        string title = title_x + "_" + j.ToString().PadLeft(cut_y_len, '0');
+                        int pixel_y;
+                        if (j == cut_y - 1)
+                        {
+                            if (last_CA_pixel_y < 1)
+                            {
+                                break;
+                            }
+                            pixel_y = last_CA_pixel_y;
+                            cut_area_MC[0] = area_MC[2] + last_CA_pixel_y;
+                            cut_area_MC[2] = area_MC[2];
+                        }
+                        else
+                        {
+                            pixel_y = cut_area_pixel[1];
+                            cut_area_MC[0] = area_MC[0] - (cut_area_MC_y * j);
+                            cut_area_MC[2] = area_MC[0] - (cut_area_MC_y * (j + 1));
+                        }
+                        double[] CA_center_LL = convertArea_MC2P_LL(cut_area_MC);
+                        string[] content = new string[] { pixel_x.ToString(), pixel_y.ToString(), CA_center_LL[0].ToString(), CA_center_LL[1].ToString() };
+                        cut_pixel_and_center_LL.Add(title, content);
+                    }
                 }
-            }
 
-            return cut_pixel_and_center_LL;
+                return cut_pixel_and_center_LL;
+            }
+            catch (Exception)
+            {
+                throw;
+            }
         }
+        #endregion
 
     }
 }

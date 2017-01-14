@@ -33,11 +33,14 @@
             this.button1 = new System.Windows.Forms.Button();
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.tabPage1 = new System.Windows.Forms.TabPage();
-            this.button16 = new System.Windows.Forms.Button();
+            this.button28 = new System.Windows.Forms.Button();
+            this.button29 = new System.Windows.Forms.Button();
+            this.button30 = new System.Windows.Forms.Button();
+            this.dataGridView3 = new System.Windows.Forms.DataGridView();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
-            this.button19 = new System.Windows.Forms.Button();
-            this.button18 = new System.Windows.Forms.Button();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
+            this.checkBox8 = new System.Windows.Forms.CheckBox();
+            this.checkBox7 = new System.Windows.Forms.CheckBox();
             this.button25 = new System.Windows.Forms.Button();
             this.textBox8 = new System.Windows.Forms.TextBox();
             this.numericUpDown12 = new System.Windows.Forms.NumericUpDown();
@@ -52,8 +55,6 @@
             this.numericUpDown6 = new System.Windows.Forms.NumericUpDown();
             this.label7 = new System.Windows.Forms.Label();
             this.label6 = new System.Windows.Forms.Label();
-            this.label5 = new System.Windows.Forms.Label();
-            this.label4 = new System.Windows.Forms.Label();
             this.numericUpDown5 = new System.Windows.Forms.NumericUpDown();
             this.numericUpDown4 = new System.Windows.Forms.NumericUpDown();
             this.numericUpDown3 = new System.Windows.Forms.NumericUpDown();
@@ -64,7 +65,6 @@
             this.label3 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
             this.label1 = new System.Windows.Forms.Label();
-            this.button17 = new System.Windows.Forms.Button();
             this.tabPage2 = new System.Windows.Forms.TabPage();
             this.dataGridView1 = new System.Windows.Forms.DataGridView();
             this.button10 = new System.Windows.Forms.Button();
@@ -83,6 +83,7 @@
             this.textBox3 = new System.Windows.Forms.TextBox();
             this.textBox2 = new System.Windows.Forms.TextBox();
             this.groupBox4 = new System.Windows.Forms.GroupBox();
+            this.button27 = new System.Windows.Forms.Button();
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.numericUpDown17 = new System.Windows.Forms.NumericUpDown();
             this.numericUpDown18 = new System.Windows.Forms.NumericUpDown();
@@ -141,6 +142,8 @@
             this.label18 = new System.Windows.Forms.Label();
             this.label17 = new System.Windows.Forms.Label();
             this.label16 = new System.Windows.Forms.Label();
+            this.button16 = new System.Windows.Forms.Button();
+            this.button17 = new System.Windows.Forms.Button();
             this.label28 = new System.Windows.Forms.Label();
             this.label25 = new System.Windows.Forms.Label();
             this.label24 = new System.Windows.Forms.Label();
@@ -164,9 +167,9 @@
             this.groupBox6 = new System.Windows.Forms.GroupBox();
             this.button23 = new System.Windows.Forms.Button();
             this.button26 = new System.Windows.Forms.Button();
-            this.button27 = new System.Windows.Forms.Button();
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.dataGridView3)).BeginInit();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown12)).BeginInit();
@@ -242,9 +245,11 @@
             // 
             // tabPage1
             // 
-            this.tabPage1.Controls.Add(this.button16);
+            this.tabPage1.Controls.Add(this.button28);
+            this.tabPage1.Controls.Add(this.button29);
+            this.tabPage1.Controls.Add(this.button30);
+            this.tabPage1.Controls.Add(this.dataGridView3);
             this.tabPage1.Controls.Add(this.groupBox1);
-            this.tabPage1.Controls.Add(this.button17);
             this.tabPage1.Location = new System.Drawing.Point(4, 22);
             this.tabPage1.Name = "tabPage1";
             this.tabPage1.Padding = new System.Windows.Forms.Padding(3);
@@ -253,19 +258,54 @@
             this.tabPage1.Text = "设置项目";
             this.tabPage1.UseVisualStyleBackColor = true;
             // 
-            // button16
+            // button28
             // 
-            this.button16.Location = new System.Drawing.Point(767, 15);
-            this.button16.Name = "button16";
-            this.button16.Size = new System.Drawing.Size(75, 23);
-            this.button16.TabIndex = 2;
-            this.button16.Text = "帮助文件";
-            this.button16.UseVisualStyleBackColor = true;
+            this.button28.Location = new System.Drawing.Point(650, 44);
+            this.button28.Name = "button28";
+            this.button28.Size = new System.Drawing.Size(75, 23);
+            this.button28.TabIndex = 14;
+            this.button28.Text = "《 打开";
+            this.button28.UseVisualStyleBackColor = true;
+            this.button28.Click += new System.EventHandler(this.button28_Click);
+            // 
+            // button29
+            // 
+            this.button29.Location = new System.Drawing.Point(650, 73);
+            this.button29.Name = "button29";
+            this.button29.Size = new System.Drawing.Size(75, 23);
+            this.button29.TabIndex = 13;
+            this.button29.Text = "删除";
+            this.button29.UseVisualStyleBackColor = true;
+            this.button29.Click += new System.EventHandler(this.button29_Click);
+            // 
+            // button30
+            // 
+            this.button30.Location = new System.Drawing.Point(650, 15);
+            this.button30.Name = "button30";
+            this.button30.Size = new System.Drawing.Size(75, 23);
+            this.button30.TabIndex = 12;
+            this.button30.Text = "添加 》";
+            this.button30.UseVisualStyleBackColor = true;
+            this.button30.Click += new System.EventHandler(this.button30_Click);
+            // 
+            // dataGridView3
+            // 
+            this.dataGridView3.AllowUserToAddRows = false;
+            this.dataGridView3.AllowUserToDeleteRows = false;
+            this.dataGridView3.AllowUserToOrderColumns = true;
+            this.dataGridView3.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.dataGridView3.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.ColumnHeader;
+            this.dataGridView3.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.dataGridView3.Location = new System.Drawing.Point(731, 3);
+            this.dataGridView3.Name = "dataGridView3";
+            this.dataGridView3.ReadOnly = true;
+            this.dataGridView3.RowTemplate.Height = 23;
+            this.dataGridView3.Size = new System.Drawing.Size(226, 225);
+            this.dataGridView3.TabIndex = 9;
             // 
             // groupBox1
             // 
-            this.groupBox1.Controls.Add(this.button19);
-            this.groupBox1.Controls.Add(this.button18);
             this.groupBox1.Controls.Add(this.groupBox2);
             this.groupBox1.Controls.Add(this.numericUpDown5);
             this.groupBox1.Controls.Add(this.numericUpDown4);
@@ -280,32 +320,15 @@
             this.groupBox1.Dock = System.Windows.Forms.DockStyle.Left;
             this.groupBox1.Location = new System.Drawing.Point(3, 3);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(678, 225);
+            this.groupBox1.Size = new System.Drawing.Size(641, 225);
             this.groupBox1.TabIndex = 0;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "基础设置";
             // 
-            // button19
-            // 
-            this.button19.Enabled = false;
-            this.button19.Location = new System.Drawing.Point(211, 46);
-            this.button19.Name = "button19";
-            this.button19.Size = new System.Drawing.Size(75, 23);
-            this.button19.TabIndex = 11;
-            this.button19.Text = "还原设置";
-            this.button19.UseVisualStyleBackColor = true;
-            // 
-            // button18
-            // 
-            this.button18.Location = new System.Drawing.Point(211, 15);
-            this.button18.Name = "button18";
-            this.button18.Size = new System.Drawing.Size(75, 23);
-            this.button18.TabIndex = 10;
-            this.button18.Text = "保存设置";
-            this.button18.UseVisualStyleBackColor = true;
-            // 
             // groupBox2
             // 
+            this.groupBox2.Controls.Add(this.checkBox8);
+            this.groupBox2.Controls.Add(this.checkBox7);
             this.groupBox2.Controls.Add(this.button25);
             this.groupBox2.Controls.Add(this.textBox8);
             this.groupBox2.Controls.Add(this.numericUpDown12);
@@ -320,34 +343,53 @@
             this.groupBox2.Controls.Add(this.numericUpDown6);
             this.groupBox2.Controls.Add(this.label7);
             this.groupBox2.Controls.Add(this.label6);
-            this.groupBox2.Controls.Add(this.label5);
-            this.groupBox2.Controls.Add(this.label4);
-            this.groupBox2.Location = new System.Drawing.Point(298, 12);
+            this.groupBox2.Location = new System.Drawing.Point(267, 12);
             this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Size = new System.Drawing.Size(371, 207);
+            this.groupBox2.Size = new System.Drawing.Size(367, 207);
             this.groupBox2.TabIndex = 1;
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "进阶设置";
             // 
+            // checkBox8
+            // 
+            this.checkBox8.AutoSize = true;
+            this.checkBox8.Location = new System.Drawing.Point(9, 45);
+            this.checkBox8.Name = "checkBox8";
+            this.checkBox8.Size = new System.Drawing.Size(144, 16);
+            this.checkBox8.TabIndex = 23;
+            this.checkBox8.Text = "自设地图尺寸（px）：";
+            this.checkBox8.UseVisualStyleBackColor = true;
+            // 
+            // checkBox7
+            // 
+            this.checkBox7.AutoSize = true;
+            this.checkBox7.Location = new System.Drawing.Point(9, 16);
+            this.checkBox7.Name = "checkBox7";
+            this.checkBox7.Size = new System.Drawing.Size(156, 16);
+            this.checkBox7.TabIndex = 22;
+            this.checkBox7.Text = "自设中心点（经纬度）：";
+            this.checkBox7.UseVisualStyleBackColor = true;
+            // 
             // button25
             // 
-            this.button25.Location = new System.Drawing.Point(252, 180);
+            this.button25.Location = new System.Drawing.Point(229, 178);
             this.button25.Name = "button25";
             this.button25.Size = new System.Drawing.Size(75, 23);
             this.button25.TabIndex = 21;
             this.button25.Text = "新建";
             this.button25.UseVisualStyleBackColor = true;
+            this.button25.Click += new System.EventHandler(this.button25_Click);
             // 
             // textBox8
             // 
-            this.textBox8.Location = new System.Drawing.Point(333, 180);
+            this.textBox8.Location = new System.Drawing.Point(324, 180);
             this.textBox8.Name = "textBox8";
             this.textBox8.Size = new System.Drawing.Size(32, 21);
             this.textBox8.TabIndex = 20;
             // 
             // numericUpDown12
             // 
-            this.numericUpDown12.Location = new System.Drawing.Point(150, 143);
+            this.numericUpDown12.Location = new System.Drawing.Point(165, 143);
             this.numericUpDown12.Maximum = new decimal(new int[] {
             99999,
             0,
@@ -365,7 +407,7 @@
             // label23
             // 
             this.label23.AutoSize = true;
-            this.label23.Location = new System.Drawing.Point(237, 96);
+            this.label23.Location = new System.Drawing.Point(252, 96);
             this.label23.Name = "label23";
             this.label23.Size = new System.Drawing.Size(11, 12);
             this.label23.TabIndex = 15;
@@ -373,7 +415,7 @@
             // 
             // numericUpDown10
             // 
-            this.numericUpDown10.Location = new System.Drawing.Point(150, 91);
+            this.numericUpDown10.Location = new System.Drawing.Point(165, 91);
             this.numericUpDown10.Maximum = new decimal(new int[] {
             99999,
             0,
@@ -390,7 +432,7 @@
             // 
             // numericUpDown11
             // 
-            this.numericUpDown11.Location = new System.Drawing.Point(260, 91);
+            this.numericUpDown11.Location = new System.Drawing.Point(275, 91);
             this.numericUpDown11.Maximum = new decimal(new int[] {
             99999,
             0,
@@ -408,7 +450,7 @@
             // label22
             // 
             this.label22.AutoSize = true;
-            this.label22.Location = new System.Drawing.Point(237, 46);
+            this.label22.Location = new System.Drawing.Point(252, 46);
             this.label22.Name = "label22";
             this.label22.Size = new System.Drawing.Size(11, 12);
             this.label22.TabIndex = 12;
@@ -416,7 +458,7 @@
             // 
             // numericUpDown8
             // 
-            this.numericUpDown8.Location = new System.Drawing.Point(150, 41);
+            this.numericUpDown8.Location = new System.Drawing.Point(165, 41);
             this.numericUpDown8.Maximum = new decimal(new int[] {
             99999,
             0,
@@ -428,7 +470,7 @@
             // 
             // numericUpDown9
             // 
-            this.numericUpDown9.Location = new System.Drawing.Point(260, 41);
+            this.numericUpDown9.Location = new System.Drawing.Point(275, 41);
             this.numericUpDown9.Maximum = new decimal(new int[] {
             99999,
             0,
@@ -441,7 +483,7 @@
             // label21
             // 
             this.label21.AutoSize = true;
-            this.label21.Location = new System.Drawing.Point(237, 20);
+            this.label21.Location = new System.Drawing.Point(252, 20);
             this.label21.Name = "label21";
             this.label21.Size = new System.Drawing.Size(17, 12);
             this.label21.TabIndex = 9;
@@ -455,7 +497,7 @@
             0,
             0,
             262144});
-            this.numericUpDown7.Location = new System.Drawing.Point(260, 14);
+            this.numericUpDown7.Location = new System.Drawing.Point(275, 14);
             this.numericUpDown7.Maximum = new decimal(new int[] {
             1000,
             0,
@@ -473,7 +515,7 @@
             0,
             0,
             262144});
-            this.numericUpDown6.Location = new System.Drawing.Point(150, 14);
+            this.numericUpDown6.Location = new System.Drawing.Point(165, 14);
             this.numericUpDown6.Maximum = new decimal(new int[] {
             1000,
             0,
@@ -500,24 +542,6 @@
             this.label6.Size = new System.Drawing.Size(125, 12);
             this.label6.TabIndex = 2;
             this.label6.Text = "截图切片尺寸（px）：";
-            // 
-            // label5
-            // 
-            this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(7, 46);
-            this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(125, 12);
-            this.label5.TabIndex = 1;
-            this.label5.Text = "自设地图尺寸（px）：";
-            // 
-            // label4
-            // 
-            this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(7, 22);
-            this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(137, 12);
-            this.label4.TabIndex = 0;
-            this.label4.Text = "自设中心点（经纬度）：";
             // 
             // numericUpDown5
             // 
@@ -653,15 +677,6 @@
             this.label1.TabIndex = 0;
             this.label1.Text = "项目标题：";
             // 
-            // button17
-            // 
-            this.button17.Location = new System.Drawing.Point(767, 45);
-            this.button17.Name = "button17";
-            this.button17.Size = new System.Drawing.Size(75, 23);
-            this.button17.TabIndex = 7;
-            this.button17.Text = "还原设置";
-            this.button17.UseVisualStyleBackColor = true;
-            // 
             // tabPage2
             // 
             this.tabPage2.Controls.Add(this.dataGridView1);
@@ -683,10 +698,16 @@
             // 
             // dataGridView1
             // 
+            this.dataGridView1.AllowUserToAddRows = false;
+            this.dataGridView1.AllowUserToDeleteRows = false;
+            this.dataGridView1.AllowUserToOrderColumns = true;
+            this.dataGridView1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.dataGridView1.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.ColumnHeader;
             this.dataGridView1.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.dataGridView1.Dock = System.Windows.Forms.DockStyle.Right;
             this.dataGridView1.Location = new System.Drawing.Point(649, 3);
             this.dataGridView1.Name = "dataGridView1";
+            this.dataGridView1.ReadOnly = true;
             this.dataGridView1.RowTemplate.Height = 23;
             this.dataGridView1.Size = new System.Drawing.Size(305, 225);
             this.dataGridView1.TabIndex = 8;
@@ -699,6 +720,7 @@
             this.button10.TabIndex = 7;
             this.button10.Text = "《 编辑";
             this.button10.UseVisualStyleBackColor = true;
+            this.button10.Click += new System.EventHandler(this.button10_Click);
             // 
             // button9
             // 
@@ -708,6 +730,7 @@
             this.button9.TabIndex = 6;
             this.button9.Text = "显形";
             this.button9.UseVisualStyleBackColor = true;
+            this.button9.Click += new System.EventHandler(this.button9_Click);
             // 
             // button8
             // 
@@ -717,6 +740,7 @@
             this.button8.TabIndex = 5;
             this.button8.Text = "隐形";
             this.button8.UseVisualStyleBackColor = true;
+            this.button8.Click += new System.EventHandler(this.button8_Click);
             // 
             // button7
             // 
@@ -726,6 +750,7 @@
             this.button7.TabIndex = 4;
             this.button7.Text = "失效";
             this.button7.UseVisualStyleBackColor = true;
+            this.button7.Click += new System.EventHandler(this.button7_Click);
             // 
             // button6
             // 
@@ -735,6 +760,7 @@
             this.button6.TabIndex = 3;
             this.button6.Text = "生效";
             this.button6.UseVisualStyleBackColor = true;
+            this.button6.Click += new System.EventHandler(this.button6_Click);
             // 
             // button5
             // 
@@ -744,6 +770,7 @@
             this.button5.TabIndex = 2;
             this.button5.Text = "删除";
             this.button5.UseVisualStyleBackColor = true;
+            this.button5.Click += new System.EventHandler(this.button5_Click);
             // 
             // button4
             // 
@@ -753,6 +780,7 @@
             this.button4.TabIndex = 1;
             this.button4.Text = "添加 》";
             this.button4.UseVisualStyleBackColor = true;
+            this.button4.Click += new System.EventHandler(this.button4_Click);
             // 
             // groupBox3
             // 
@@ -786,6 +814,7 @@
             this.button22.TabIndex = 17;
             this.button22.Text = "新建";
             this.button22.UseVisualStyleBackColor = true;
+            this.button22.Click += new System.EventHandler(this.button22_Click);
             // 
             // textBox9
             // 
@@ -880,6 +909,16 @@
             this.groupBox4.TabIndex = 10;
             this.groupBox4.TabStop = false;
             this.groupBox4.Text = "进阶设置";
+            // 
+            // button27
+            // 
+            this.button27.Location = new System.Drawing.Point(155, 106);
+            this.button27.Name = "button27";
+            this.button27.Size = new System.Drawing.Size(90, 23);
+            this.button27.TabIndex = 24;
+            this.button27.Text = "自动计算出血";
+            this.button27.UseVisualStyleBackColor = true;
+            this.button27.Click += new System.EventHandler(this.button27_Click);
             // 
             // pictureBox1
             // 
@@ -978,7 +1017,7 @@
             this.numericUpDown15.Size = new System.Drawing.Size(81, 21);
             this.numericUpDown15.TabIndex = 17;
             this.numericUpDown15.Value = new decimal(new int[] {
-            15,
+            18,
             0,
             0,
             0});
@@ -1166,7 +1205,7 @@
             // label34
             // 
             this.label34.AutoSize = true;
-            this.label34.Location = new System.Drawing.Point(375, 14);
+            this.label34.Location = new System.Drawing.Point(442, 14);
             this.label34.Name = "label34";
             this.label34.Size = new System.Drawing.Size(65, 12);
             this.label34.TabIndex = 28;
@@ -1247,14 +1286,14 @@
             // 
             // textBox14
             // 
-            this.textBox14.Location = new System.Drawing.Point(322, 84);
+            this.textBox14.Location = new System.Drawing.Point(389, 84);
             this.textBox14.Name = "textBox14";
             this.textBox14.Size = new System.Drawing.Size(273, 21);
             this.textBox14.TabIndex = 18;
             // 
             // textBox13
             // 
-            this.textBox13.Location = new System.Drawing.Point(322, 57);
+            this.textBox13.Location = new System.Drawing.Point(389, 57);
             this.textBox13.Name = "textBox13";
             this.textBox13.Size = new System.Drawing.Size(273, 21);
             this.textBox13.TabIndex = 17;
@@ -1262,7 +1301,7 @@
             // checkBox6
             // 
             this.checkBox6.AutoSize = true;
-            this.checkBox6.Location = new System.Drawing.Point(602, 35);
+            this.checkBox6.Location = new System.Drawing.Point(669, 35);
             this.checkBox6.Name = "checkBox6";
             this.checkBox6.Size = new System.Drawing.Size(48, 16);
             this.checkBox6.TabIndex = 16;
@@ -1301,10 +1340,11 @@
             this.button21.TabIndex = 12;
             this.button21.Text = "保存设置";
             this.button21.UseVisualStyleBackColor = true;
+            this.button21.Click += new System.EventHandler(this.button21_Click);
             // 
             // textBox5
             // 
-            this.textBox5.Location = new System.Drawing.Point(220, 32);
+            this.textBox5.Location = new System.Drawing.Point(287, 32);
             this.textBox5.Name = "textBox5";
             this.textBox5.Size = new System.Drawing.Size(375, 21);
             this.textBox5.TabIndex = 3;
@@ -1312,7 +1352,7 @@
             // checkBox5
             // 
             this.checkBox5.AutoSize = true;
-            this.checkBox5.Location = new System.Drawing.Point(220, 86);
+            this.checkBox5.Location = new System.Drawing.Point(287, 86);
             this.checkBox5.Name = "checkBox5";
             this.checkBox5.Size = new System.Drawing.Size(96, 16);
             this.checkBox5.TabIndex = 2;
@@ -1322,7 +1362,7 @@
             // checkBox4
             // 
             this.checkBox4.AutoSize = true;
-            this.checkBox4.Location = new System.Drawing.Point(220, 59);
+            this.checkBox4.Location = new System.Drawing.Point(287, 59);
             this.checkBox4.Name = "checkBox4";
             this.checkBox4.Size = new System.Drawing.Size(84, 16);
             this.checkBox4.TabIndex = 1;
@@ -1354,8 +1394,9 @@
             // 
             // dataGridView2
             // 
+            this.dataGridView2.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.dataGridView2.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.dataGridView2.Dock = System.Windows.Forms.DockStyle.Right;
             this.dataGridView2.Location = new System.Drawing.Point(312, 0);
             this.dataGridView2.Name = "dataGridView2";
             this.dataGridView2.RowTemplate.Height = 23;
@@ -1370,6 +1411,7 @@
             this.button12.TabIndex = 11;
             this.button12.Text = "《 编辑";
             this.button12.UseVisualStyleBackColor = true;
+            this.button12.Click += new System.EventHandler(this.button12_Click);
             // 
             // button13
             // 
@@ -1379,6 +1421,7 @@
             this.button13.TabIndex = 10;
             this.button13.Text = "删除";
             this.button13.UseVisualStyleBackColor = true;
+            this.button13.Click += new System.EventHandler(this.button13_Click);
             // 
             // button14
             // 
@@ -1388,6 +1431,7 @@
             this.button14.TabIndex = 9;
             this.button14.Text = "添加 》";
             this.button14.UseVisualStyleBackColor = true;
+            this.button14.Click += new System.EventHandler(this.button14_Click);
             // 
             // groupBox5
             // 
@@ -1415,6 +1459,7 @@
             this.button24.TabIndex = 18;
             this.button24.Text = "新建";
             this.button24.UseVisualStyleBackColor = true;
+            this.button24.Click += new System.EventHandler(this.button24_Click);
             // 
             // textBox10
             // 
@@ -1482,6 +1527,24 @@
             this.label16.Size = new System.Drawing.Size(41, 12);
             this.label16.TabIndex = 0;
             this.label16.Text = "标题：";
+            // 
+            // button16
+            // 
+            this.button16.Location = new System.Drawing.Point(883, 258);
+            this.button16.Name = "button16";
+            this.button16.Size = new System.Drawing.Size(75, 23);
+            this.button16.TabIndex = 2;
+            this.button16.Text = "帮助文件";
+            this.button16.UseVisualStyleBackColor = true;
+            // 
+            // button17
+            // 
+            this.button17.Location = new System.Drawing.Point(771, 258);
+            this.button17.Name = "button17";
+            this.button17.Size = new System.Drawing.Size(75, 23);
+            this.button17.TabIndex = 7;
+            this.button17.Text = "还原设置";
+            this.button17.UseVisualStyleBackColor = true;
             // 
             // label28
             // 
@@ -1710,22 +1773,15 @@
             this.button26.Text = "重叠点检查";
             this.button26.UseVisualStyleBackColor = true;
             // 
-            // button27
-            // 
-            this.button27.Location = new System.Drawing.Point(155, 106);
-            this.button27.Name = "button27";
-            this.button27.Size = new System.Drawing.Size(90, 23);
-            this.button27.TabIndex = 24;
-            this.button27.Text = "自动计算出血";
-            this.button27.UseVisualStyleBackColor = true;
-            // 
             // MainForm1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(965, 674);
+            this.Controls.Add(this.button16);
             this.Controls.Add(this.button26);
             this.Controls.Add(this.groupBox6);
+            this.Controls.Add(this.button17);
             this.Controls.Add(this.label25);
             this.Controls.Add(this.label28);
             this.Controls.Add(this.label24);
@@ -1742,6 +1798,7 @@
             this.Load += new System.EventHandler(this.Form1_Load);
             this.tabControl1.ResumeLayout(false);
             this.tabPage1.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.dataGridView3)).EndInit();
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
             this.groupBox2.ResumeLayout(false);
@@ -1812,8 +1869,6 @@
         private System.Windows.Forms.NumericUpDown numericUpDown6;
         private System.Windows.Forms.Label label7;
         private System.Windows.Forms.Label label6;
-        private System.Windows.Forms.Label label5;
-        private System.Windows.Forms.Label label4;
         private System.Windows.Forms.GroupBox groupBox1;
         private System.Windows.Forms.NumericUpDown numericUpDown5;
         private System.Windows.Forms.NumericUpDown numericUpDown4;
@@ -1885,8 +1940,6 @@
         private System.Windows.Forms.NumericUpDown numericUpDown21;
         private System.Windows.Forms.TextBox textBox6;
         private System.Windows.Forms.Button button17;
-        private System.Windows.Forms.Button button19;
-        private System.Windows.Forms.Button button18;
         private System.Windows.Forms.Button button20;
         private System.Windows.Forms.Button button21;
         private System.Windows.Forms.StatusStrip statusStrip1;
@@ -1929,6 +1982,12 @@
         private System.Windows.Forms.Button button23;
         private System.Windows.Forms.Button button26;
         private System.Windows.Forms.Button button27;
+        private System.Windows.Forms.CheckBox checkBox8;
+        private System.Windows.Forms.CheckBox checkBox7;
+        private System.Windows.Forms.Button button28;
+        private System.Windows.Forms.Button button29;
+        private System.Windows.Forms.Button button30;
+        private System.Windows.Forms.DataGridView dataGridView3;
     }
 }
 
