@@ -179,21 +179,21 @@ namespace MapMaker.MapHelper
         /// <summary>  
         ///   地图未覆盖到的点，其序号（pointid）
         /// </summary>
-        public List<int> user_area_lack
+        public int[] user_area_lack
         {
             get
             {
-                return checkLackPs(_area_MC, _level, _P_area_MC_up, _P_area_MC_right, _P_area_MC_bottom, _P_area_MC_left);
+                return checkLackPs(_area_MC, _level, _P_area_MC_up, _P_area_MC_right, _P_area_MC_bottom, _P_area_MC_left).ToArray();
             }
         }
         /// <summary>  
         ///   互相遮挡的点，其序号（pointid）
         /// </summary>
-        public List<int> user_area_cover
+        public int[] user_area_cover
         {
             get
             {
-                return checkCoverPs(_level, _P_area_MC_up, _P_area_MC_right, _P_area_MC_bottom, _P_area_MC_left);
+                return checkCoverPs(_level, _P_area_MC_up, _P_area_MC_right, _P_area_MC_bottom, _P_area_MC_left).ToArray();
             }
         }
         /// <summary>  
@@ -279,7 +279,7 @@ namespace MapMaker.MapHelper
                 _Ps_LL_and_bleed = Ps_LL_and_bleed;
                 //以下运行代码
                 covertP_LL2MC(_Ps_LL_and_bleed, level);
-                _area_bleed_MC = new double[] { Math.Abs(convert(_area_bleed_Pixel[0], level)), Math.Abs(convert(_area_bleed_Pixel[1], level)) };
+                _area_bleed_MC = new double[] { Math.Abs(convert(_area_bleed_Pixel[0], level)), Math.Abs(convert(_area_bleed_Pixel[1], level)), Math.Abs(convert(_area_bleed_Pixel[2], level)), Math.Abs(convert(_area_bleed_Pixel[3], level)) };
                 _area_MC = sumPsArea(_area_bleed_MC, _P_area_MC_up, _P_area_MC_right, _P_area_MC_bottom, _P_area_MC_left);
                 double[] auto_center_LL = convertArea_MC2P_LL(_area_MC);
                 _center_x_LL = auto_center_LL[0];
@@ -310,7 +310,7 @@ namespace MapMaker.MapHelper
                 _user_area_pixel = user_area_pixel;
                 //以下运行代码
                 covertP_LL2MC(_Ps_LL_and_bleed, level);
-                _area_bleed_MC = new double[] { Math.Abs(convert(_area_bleed_Pixel[0], level)), Math.Abs(convert(_area_bleed_Pixel[1], level)) };
+                _area_bleed_MC = new double[] { Math.Abs(convert(_area_bleed_Pixel[0], level)), Math.Abs(convert(_area_bleed_Pixel[1], level)), Math.Abs(convert(_area_bleed_Pixel[2], level)), Math.Abs(convert(_area_bleed_Pixel[3], level)) };
                 _area_MC = sumPsArea(_area_bleed_MC, _P_area_MC_up, _P_area_MC_right, _P_area_MC_bottom, _P_area_MC_left);
                 double[] auto_center_LL = convertArea_MC2P_LL(_area_MC);
                 _center_x_LL = auto_center_LL[0];

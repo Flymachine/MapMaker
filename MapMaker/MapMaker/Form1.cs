@@ -12,6 +12,7 @@ using System.Data.SQLite;
 using Freezer.Core;
 using System.IO;
 using MapMaker.MapHelper;
+using MapMaker.JsonHelper;
 
 
 namespace MapMaker
@@ -21,6 +22,18 @@ namespace MapMaker
         SQLiteConnection conn = new SQLiteConnection("data source=./mapmaker.db");
         SQLiteCommand cmd = new SQLiteCommand();
         SQLiteHelper sh;
+        private int projectid = 1,
+            pointid = 0,
+            fontid = 0,
+            level = 16,
+            delay = 100;
+        private int[] area_bleed_Pixel = new int[] { 100, 500, 100, 200 },
+            cut_area_pixel = new int[] { 3000, 2000 },
+            user_area_pixel = new int[] { 0, 0};
+        private double[] user_center_LL = new double[] { 0, 0 };
+        private bool user_center = false,
+            user_area = false;
+        
 
         public MainForm1()
         {
@@ -126,13 +139,13 @@ namespace MapMaker
             dicData["cutpxx"] = numericUpDown10.Value;
             dicData["cutpxy"] = numericUpDown11.Value;
             dicData["delay"] = numericUpDown12.Value;
-            if (textBox8.Text.Trim() == "" || textBox8.Text.Trim() == "0")
+            if (projectid == 0)
             {
                 sh.Insert("project", dicData);
             }
             else
             {
-                sh.Update("project", dicData, "projectid", textBox8.Text.Trim());
+                sh.Update("project", dicData, "projectid", projectid);
             }
         }
         private Dictionary<string, string> GetProjectSet(SQLiteHelper sh, int id)
@@ -140,12 +153,9 @@ namespace MapMaker
             DataTable dt;
             if (id == 0)
             {
-                dt = sh.Select("select * from project where projectid = max(projectid);");
+                id = Convert.ToInt32(sh.LastInsertRowId());
             }
-            else
-            {
-                dt = sh.Select("select * from project where projectid = " + id + ";");
-            }
+            dt = sh.Select("select * from project where projectid = " + id + ";");
             var dic = new Dictionary<string, string>();
             if (dt == null)
             {
@@ -205,6 +215,7 @@ namespace MapMaker
                 col.ColumnName = ToChineseName(colName);
             }
             dataGridView1.DataSource = dt;
+            DisplayResult();
         }
         private void SavePointSet(SQLiteHelper sh)
         {
@@ -224,19 +235,18 @@ namespace MapMaker
             dic["bleedr"] = numericUpDown18.Value;
             dic["bleedb"] = numericUpDown19.Value;
             dic["bleedl"] = numericUpDown20.Value;
-            if (textBox9.Text.Trim() == ""|| textBox9.Text.Trim() == "0")
+            if (pointid == 0)
             {
-                if(textBox8.Text.Trim() == "" || textBox8.Text.Trim() == "0")
+                if(projectid == 0)
                 {
                     MessageBox.Show("项目未保存，无法添加此点，请先保存项目", "警告");
                     return ;
                 }
-                dic["project"] = textBox8.Text.Trim();
+                dic["project"] = projectid;
                 sh.Insert("point", dic);
             }
             else
             {
-                int pointid = Convert.ToInt32(textBox9.Text.Trim());
                 sh.Update("point", dic, "pointid", pointid);
             }
         }
@@ -245,12 +255,9 @@ namespace MapMaker
             DataTable dt;
             if (pointid == 0)
             {
-              dt = sh.Select("select * from point where pointid = max(pointid);");
+                pointid = Convert.ToInt32(sh.LastInsertRowId());
             }
-            else
-            {
-                dt = sh.Select("select * from point where pointid = " + pointid + ";");
-            }
+            dt = sh.Select("select * from point where pointid = " + pointid + ";");
             var dic = new Dictionary<string, string>();
             if (dt == null)
             {
@@ -388,14 +395,19 @@ namespace MapMaker
             var dic = new Dictionary<string, object>();
             dic["title"] = textBox6.Text;
             dic["fontSize"] = numericUpDown21.Value;
-            dic["content"] = textBox7.Text;
-            if (textBox9.Text.Trim() == "" || textBox9.Text.Trim() == "0")
+            if(textBox7.Text.Length > 2)
+            {
+                dic["content"] = textBox7.Text;
+            }else
+            {
+                dic["content"] = "borderolor: \"#808080\",color: \"#333\",cursor: \"pointer\"";
+            }
+            if (pointid == 0)
             {
                 sh.Insert("font", dic);
             }
             else
             {
-                int fontid = Convert.ToInt32(textBox10.Text.Trim());
                 sh.Update("font", dic, "fontid", fontid);
             }
         }
@@ -404,11 +416,9 @@ namespace MapMaker
             DataTable dt;
             if (id == 0)
             {
-                dt = sh.Select("select * from font where fontid = max(fontid);");
-            }else
-            {
-                dt = sh.Select("select * from font where fontid = " + id + ";");
+                id = Convert.ToInt32(sh.LastInsertRowId());
             }
+            dt = sh.Select("select * from font where fontid = " + id + ";");
             var dic = new Dictionary<string, string>();
             if (dt == null)
             {
@@ -426,7 +436,30 @@ namespace MapMaker
         }
         #endregion
 
+        #region 地图计算
+
+        private void MapMaker()
+        {
+            Dictionary<int, double[]> Ps_LL_and_bleed = GetPs(sh, projectid, true);
+            MapHelper.MapHelper mh = new MapHelper.MapHelper(level, area_bleed_Pixel, cut_area_pixel, Ps_LL_and_bleed);
+        }
+        #endregion
+
         #region 其他
+        /// <summary>  
+        ///   返回int数组元素组成的字符串
+        /// </summary>  
+        /// <param name="array">数组</param>  
+        public string convertArr2Str(int[] array)
+        {
+            string str = " ";
+            foreach (int obj in array)
+            {
+                str += obj.ToString() + ", ";
+            }
+            return str;
+        }
+
         public static string htmlencode(string str)
         {
             str.Replace(" ", " ");
@@ -585,45 +618,189 @@ namespace MapMaker
             pictureBox1.ImageLocation = resultFile;
         }
 
+        /// <summary>  
+        ///   项目新建
+        /// </summary> 
         private void button25_Click(object sender, EventArgs e)
         {
             MessageBox.Show("保存新项目仍需点击“添加”，为了方便建点，请及时保存", "提示");
             textBox8.Text = "";
         }
 
+        /// <summary>  
+        ///   项目id储存
+        /// </summary> 
+        private void textBox8_TextChanged(object sender, EventArgs e)
+        {
+            projectid = Convert.ToInt32(textBox8.Text.Trim() == "" ? "0" : textBox8.Text.Trim());
+        }
+
+        /// <summary>  
+        ///   项目等级储存
+        /// </summary> 
+        private void numericUpDown1_ValueChanged(object sender, EventArgs e)
+        {
+            level = Convert.ToInt32(numericUpDown1.Value);
+        }
+
+        /// <summary>  
+        ///   项目出血区-上储存
+        /// </summary> 
+        private void numericUpDown2_ValueChanged(object sender, EventArgs e)
+        {
+            area_bleed_Pixel[0] = Convert.ToInt32(numericUpDown2.Value);
+        }
+
+        /// <summary>  
+        ///   项目出血区-右储存
+        /// </summary> 
+        private void numericUpDown3_ValueChanged(object sender, EventArgs e)
+        {
+            area_bleed_Pixel[1] = Convert.ToInt32(numericUpDown3.Value);
+        }
+
+        /// <summary>  
+        ///   项目出血区-下储存
+        /// </summary> 
+        private void numericUpDown4_ValueChanged(object sender, EventArgs e)
+        {
+            area_bleed_Pixel[2] = Convert.ToInt32(numericUpDown4.Value);
+        }
+
+        /// <summary>  
+        ///   项目出血区-左储存
+        /// </summary> 
+        private void numericUpDown5_ValueChanged(object sender, EventArgs e)
+        {
+            area_bleed_Pixel[3] = Convert.ToInt32(numericUpDown5.Value);
+        }
+
+        /// <summary>  
+        ///   项目自设中心点储存
+        /// </summary> 
+        private void checkBox7_CheckedChanged(object sender, EventArgs e)
+        {
+            user_center = checkBox7.Checked;
+        }
+
+        /// <summary>  
+        ///   项目自设中心点-经度储存
+        /// </summary> 
+        private void numericUpDown6_ValueChanged(object sender, EventArgs e)
+        {
+            user_center_LL[0] = Convert.ToDouble(numericUpDown6.Value);
+        }
+
+        /// <summary>  
+        ///   项目自设中心点纬度储存
+        /// </summary> 
+        private void numericUpDown7_ValueChanged(object sender, EventArgs e)
+        {
+            user_center_LL[1] = Convert.ToDouble(numericUpDown7.Value);
+        }
+
+        /// <summary>  
+        ///   项目自设地图尺寸储存
+        /// </summary>
+        private void checkBox8_CheckedChanged(object sender, EventArgs e)
+        {
+            user_area = checkBox8.Checked;
+        }
+
+        /// <summary>  
+        ///   项目自设地图尺寸-宽储存
+        /// </summary>
+        private void numericUpDown8_ValueChanged(object sender, EventArgs e)
+        {
+            user_area_pixel[0] = Convert.ToInt32(numericUpDown8.Value);
+        }
+
+        /// <summary>  
+        ///   项目自设地图尺寸-高储存
+        /// </summary>
+        private void numericUpDown9_ValueChanged(object sender, EventArgs e)
+        {
+            user_area_pixel[1] = Convert.ToInt32(numericUpDown9.Value);
+        }
+
+        /// <summary>  
+        ///   项目截图切片尺寸-宽储存
+        /// </summary>
+        private void numericUpDown10_ValueChanged(object sender, EventArgs e)
+        {
+            cut_area_pixel[0] = Convert.ToInt32(numericUpDown10.Value);
+        }
+
+        /// <summary>  
+        ///   项目截图切片尺寸-高储存
+        /// </summary>
+        private void numericUpDown11_ValueChanged(object sender, EventArgs e)
+        {
+            cut_area_pixel[1] = Convert.ToInt32(numericUpDown11.Value);
+        }
+
+        /// <summary>  
+        ///   项目截图延迟储存
+        /// </summary>
+        private void numericUpDown12_ValueChanged(object sender, EventArgs e)
+        {
+            delay = Convert.ToInt32(numericUpDown12.Value);
+        }
+
+        /// <summary>  
+        ///   项目添加
+        /// </summary> 
         private void button30_Click(object sender, EventArgs e)
         {
             SaveProjectSet(sh);
-            DisplayProjectSet(GetProjectSet(sh, Convert.ToInt32(textBox8.Text.Trim())));
+            DisplayProjectSet(GetProjectSet(sh, projectid));
             DisplayProjects(sh);
+            DisplayPoints(sh, projectid.ToString());
             MessageBox.Show("保存成功", "提示");
         }
 
+        /// <summary>  
+        ///   项目打开
+        /// </summary> 
         private void button28_Click(object sender, EventArgs e)
         {
             int a = dataGridView3.CurrentRow.Index;
             DisplayProjectSet(GetProjectSet(sh, Convert.ToInt32(dataGridView3.Rows[a].Cells["序号"].Value)));
+            DisplayPoints(sh, projectid.ToString());
         }
 
+        /// <summary>  
+        ///   项目删除
+        /// </summary> 
         private void button29_Click(object sender, EventArgs e)
         {
             DialogResult RSS = MessageBox.Show(this, "确定要删除全部选中行数据吗？", "提示", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
             switch (RSS)
             {
                 case DialogResult.Yes:
+                    int current_id = projectid;
                     for (int i = this.dataGridView3.SelectedRows.Count; i > 0; i--)
                     {
                         int ID = Convert.ToInt32(dataGridView3.SelectedRows[i - 1].Cells[0].Value);
                         dataGridView3.Rows.RemoveAt(dataGridView3.SelectedRows[i - 1].Index);
                         //使用获得的ID删除数据库的数据
                         DelProjectSet(sh, Convert.ToInt32(ID));
+                        if(ID == current_id)
+                        {
+                            textBox8.Text = "";
+                        }
                     }
                     MessageBox.Show("成功删除选中行数据！");
+                    DisplayProjects(sh);
                     break;
                 case DialogResult.No:
                     break;
             }
         }
+
+        /// <summary>  
+        ///   点添加
+        /// </summary> 
         private void button4_Click(object sender, EventArgs e)
         {
             SavePointSet(sh);
@@ -632,22 +809,39 @@ namespace MapMaker
             textBox3.Text = "";
             numericUpDown13.Value = 0;
             numericUpDown14.Value = 0;
-            DisplayPoints(sh, textBox8.Text.Trim()=="" ? "0" : textBox8.Text.Trim());
+            DisplayPoints(sh, projectid.ToString());
             MessageBox.Show("保存成功", "提示");
         }
 
+        /// <summary>  
+        ///   点新建
+        /// </summary> 
         private void button22_Click(object sender, EventArgs e)
         {
             MessageBox.Show("保存新点仍需点击“添加”", "提示");
             textBox9.Text = "";
         }
 
+        /// <summary>  
+        ///   点id储存
+        /// </summary> 
+        private void textBox9_TextChanged(object sender, EventArgs e)
+        {
+            pointid = Convert.ToInt32(textBox9.Text.Trim() == "" ? "0" : textBox9.Text.Trim());
+        }
+
+        /// <summary>  
+        ///   点编辑
+        /// </summary> 
         private void button10_Click(object sender, EventArgs e)
         {
             int a = dataGridView1.CurrentRow.Index;
             DisplayPointSet(GetPointSet(sh, Convert.ToInt32(dataGridView1.Rows[a].Cells["序号"].Value)));
         }
 
+        /// <summary>  
+        ///   点删除
+        /// </summary> 
         private void button5_Click(object sender, EventArgs e)
         {
             DialogResult RSS = MessageBox.Show(this, "确定要删除全部选中行数据吗？", "提示", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
@@ -662,12 +856,16 @@ namespace MapMaker
                         DelPointSet(sh, Convert.ToInt32(ID));
                     }
                     MessageBox.Show("成功删除选中行数据！");
+                    DisplayPoints(sh, projectid.ToString());
                     break;
                 case DialogResult.No:
                     break;
             }
         }
 
+        /// <summary>  
+        ///   点生效
+        /// </summary> 
         private void button6_Click(object sender, EventArgs e)
         {
             DialogResult RSS = MessageBox.Show(this, "确定要将选中点全部生效吗？", "提示", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
@@ -677,7 +875,7 @@ namespace MapMaker
                     for (int i = this.dataGridView1.SelectedRows.Count; i > 0; i--)
                     {
                         int ID = Convert.ToInt32(dataGridView1.SelectedRows[i - 1].Cells[0].Value);
-                        dataGridView1.Rows.RemoveAt(dataGridView1.SelectedRows[i - 1].Index);
+                        dataGridView1.SelectedRows[i - 1].Cells["失效"].Value = 0;
                         //使用获得的ID更改数据库的数据
                         SwitchPointSet(sh, Convert.ToInt32(ID), 0);
                     }
@@ -688,6 +886,9 @@ namespace MapMaker
             }
         }
 
+        /// <summary>  
+        ///   点失效
+        /// </summary> 
         private void button7_Click(object sender, EventArgs e)
         {
             DialogResult RSS = MessageBox.Show(this, "确定要将选中点全部失效码？", "提示", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
@@ -697,7 +898,7 @@ namespace MapMaker
                     for (int i = this.dataGridView1.SelectedRows.Count; i > 0; i--)
                     {
                         int ID = Convert.ToInt32(dataGridView1.SelectedRows[i - 1].Cells[0].Value);
-                        dataGridView1.Rows.RemoveAt(dataGridView1.SelectedRows[i - 1].Index);
+                        dataGridView1.SelectedRows[i - 1].Cells["失效"].Value = 1;
                         //使用获得的ID更改数据库的数据
                         SwitchPointSet(sh, Convert.ToInt32(ID), 1);
                     }
@@ -708,6 +909,9 @@ namespace MapMaker
             }
         }
 
+        /// <summary>  
+        ///   点隐形
+        /// </summary> 
         private void button8_Click(object sender, EventArgs e)
         {
             DialogResult RSS = MessageBox.Show(this, "确定要将选中点全部隐形码？", "提示", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
@@ -717,7 +921,7 @@ namespace MapMaker
                     for (int i = this.dataGridView1.SelectedRows.Count; i > 0; i--)
                     {
                         int ID = Convert.ToInt32(dataGridView1.SelectedRows[i - 1].Cells[0].Value);
-                        dataGridView1.Rows.RemoveAt(dataGridView1.SelectedRows[i - 1].Index);
+                        dataGridView1.SelectedRows[i - 1].Cells["隐形"].Value = 1;
                         //使用获得的ID更改数据库的数据
                         StealthPointSet(sh, Convert.ToInt32(ID), 1);
                     }
@@ -728,6 +932,9 @@ namespace MapMaker
             }
         }
 
+        /// <summary>  
+        ///   点显形
+        /// </summary> 
         private void button9_Click(object sender, EventArgs e)
         {
             DialogResult RSS = MessageBox.Show(this, "确定要将选中点全部显形码？", "提示", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
@@ -737,7 +944,7 @@ namespace MapMaker
                     for (int i = this.dataGridView1.SelectedRows.Count; i > 0; i--)
                     {
                         int ID = Convert.ToInt32(dataGridView1.SelectedRows[i - 1].Cells[0].Value);
-                        dataGridView1.Rows.RemoveAt(dataGridView1.SelectedRows[i - 1].Index);
+                        dataGridView1.SelectedRows[i - 1].Cells["隐形"].Value = 0;
                         //使用获得的ID更改数据库的数据
                         StealthPointSet(sh, Convert.ToInt32(ID), 0);
                     }
@@ -748,12 +955,18 @@ namespace MapMaker
             }
         }
 
+        /// <summary>  
+        ///   地图类型设置保存
+        /// </summary> 
         private void button21_Click(object sender, EventArgs e)
         {
             SaveMapstyleSet(sh);
             MessageBox.Show("保存成功", "提示");
         }
 
+        /// <summary>  
+        ///   字体添加
+        /// </summary> 
         private void button14_Click(object sender, EventArgs e)
         {
             SaveFontSet(sh);
@@ -763,12 +976,18 @@ namespace MapMaker
             MessageBox.Show("保存成功", "提示");
         }
 
+        /// <summary>  
+        ///   字体编辑
+        /// </summary> 
         private void button12_Click(object sender, EventArgs e)
         {
             int a = dataGridView2.CurrentRow.Index;
             DisplayFontSet(GetFontSet(sh, Convert.ToInt32(dataGridView2.Rows[a].Cells["序号"].Value)));
         }
 
+        /// <summary>  
+        ///   字体删除
+        /// </summary> 
         private void button13_Click(object sender, EventArgs e)
         {
             DialogResult RSS = MessageBox.Show(this, "确定要删除全部选中行数据吗？", "提示", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
@@ -783,20 +1002,69 @@ namespace MapMaker
                         DelFontSet(sh, ID);
                     }
                     MessageBox.Show("成功删除选中行数据！");
+                    DisplayFonts(sh);
                     break;
                 case DialogResult.No:
                     break;
             }
         }
 
+        /// <summary>  
+        ///   字体新建
+        /// </summary> 
         private void button24_Click(object sender, EventArgs e)
         {
             MessageBox.Show("保存新字体仍需点击“添加”", "提示");
             textBox10.Text = "";
         }
 
+        /// <summary>  
+        ///   字体id储存
+        /// </summary> 
+        private void textBox10_TextChanged(object sender, EventArgs e)
+        {
+            fontid = Convert.ToInt32(textBox10.Text.Trim() == "" ? "0" : textBox10.Text.Trim());
+        }
+
+        /// <summary>  
+        ///   遗漏点检查（包含当前点）
+        /// </summary>
+        private void button19_Click(object sender, EventArgs e)
+        {
+            MapHelper.MapHelper mh = new MapHelper.MapHelper(level, area_bleed_Pixel, cut_area_pixel, GetPs(sh, projectid, true, true));
+            int[] lack = mh.user_area_lack;
+            int lack_count = lack.Count();
+
+            if (lack_count > 0)
+            {
+                string strA = convertArr2Str(lack);
+                string text = String.Format("当前设置存在漏点问题！" + System.Environment.NewLine + "漏掉的点：{0}", strA);
+                MessageBox.Show(text, "警告");
+            }
+        }
+
+        /// <summary>  
+        ///   重叠点检查（包含当前点）
+        /// </summary> 
+        private void button26_Click(object sender, EventArgs e)
+        {
+            MapHelper.MapHelper mh_cover = new MapHelper.MapHelper(level, area_bleed_Pixel, cut_area_pixel, GetPs(sh, projectid, true, false));
+            int[] cover = mh_cover.user_area_cover;
+            int cover_count = cover.Count();
+
+            if (cover_count > 0)
+            {
+                string strB = convertArr2Str(cover);
+                string text = String.Format("当前设置存在重叠点问题！" + System.Environment.NewLine + "重叠的点：{0}", strB);
+                MessageBox.Show(text, "警告");
+            }
+        }
+
         #endregion
 
+        /// <summary>  
+        ///   自动计算出血
+        /// </summary> 
         private void button27_Click(object sender, EventArgs e)
         {
             //字体部分
@@ -839,6 +1107,219 @@ namespace MapMaker
             numericUpDown19.Value = bottom;
             numericUpDown20.Value = left;
         }
+
+        /// <summary>  
+        ///   自动计算偏移
+        /// </summary> 
+        private void button18_Click(object sender, EventArgs e)
+        {
+            //字体部分
+            Dictionary<string, string> font = GetFontSet(sh, Convert.ToInt32(comboBox1.Text.Trim()));
+            int fontSize = Convert.ToInt32(font["fontSize"].Trim());
+            string[] content = textBox3.Lines;
+            int con_height = content.Length;
+            int textSize_h = fontSize + 2;
+            if (checkBox3.Checked)
+            {
+                textSize_h = (con_height + 2) * fontSize + 2;
+            }
+            //图标部分
+            int imgSize_w = pictureBox1.Image == null ? 20 : pictureBox1.Image.Width;
+            //额外部分
+            int exSize_w = 1;
+            int exSize_h = 5;
+            //整合
+            int x = imgSize_w + exSize_w;
+            int y = - textSize_h + exSize_h;
+            numericUpDown15.Value = x;
+            numericUpDown16.Value = y;
+        }
+
+        /// <summary>  
+        ///   微调
+        /// </summary> 
+        private void button23_Click(object sender, EventArgs e)
+        {
+            MapHelper.MapHelper mh = new MapHelper.MapHelper();
+            int x = numericUpDown22.Value == 0 ? Convert.ToInt32(numericUpDown23.Value) : Convert.ToInt32(numericUpDown22.Value),
+                y = x,
+                level = Convert.ToInt32(numericUpDown1.Value); 
+            switch (comboBox2.Text)
+            {
+                case "上移":
+                    x = 0;
+                    break;
+                case "右移":
+                    y = 0;
+                    break;
+                case "下移":
+                    x = 0;
+                    y = -y;
+                    break;
+                case "左移":
+                    x = -x;
+                    y = 0;
+                    break;
+                default:
+                    break;
+            }
+            if(numericUpDown22.Value == 0)
+            {
+                numericUpDown13.Value += Convert.ToDecimal( 0.000001 * x);
+                numericUpDown14.Value += Convert.ToDecimal(0.000001 * x);
+            }
+            else
+            {
+               double[] LL = mh.convertMC2LL(mh.convert(x, level), mh.convert(y, level), true);
+                numericUpDown13.Value += Convert.ToDecimal(LL[0]);
+                numericUpDown14.Value += Convert.ToDecimal(LL[1]);
+            }
+        }
+
+        #region 预览与生成
+        /// <summary>  
+        ///   获取点集合用于计算。序号、中心点及出血大小（像素）（pointid => {Longitude,Latitude,Up,Right,Bottom,Left}）
+        /// </summary>  
+        /// <param name="sh">数据库链接</param>  
+        /// <param name="projectid">项目id</param>
+        /// <param name="includeCurrent">true包含未保存的当前点,false不包含（用于预览）</param>
+        /// <param name="includeStealth">true包含隐形点,false不包含（用于重叠点计算）</param>
+        public Dictionary<int, double[]> GetPs(SQLiteHelper sh, int projectid, bool includeCurrent = false, bool includeStealth = true)
+        {
+            Dictionary<int, double[]> Ps = new Dictionary<int, double[]>();
+            double[] point;
+            DataTable dt = sh.Select("select * from point where project = " + projectid + ";");
+            foreach(DataRow p in dt.Rows)
+            {
+                if(!Convert.ToBoolean(p["switch"]))
+                {
+                    if (!Convert.ToBoolean(p["stealth"]) || includeStealth)
+                    {
+                        //点集合，序号、中心点及出血大小（像素）（pointid => {Longitude,Latitude,Up,Right,Bottom,Left}）
+                        point = new double[] { Convert.ToDouble(p["pointx"]), Convert.ToDouble(p["pointy"]), Convert.ToDouble(p["bleedu"]), Convert.ToDouble(p["bleedr"]), Convert.ToDouble(p["bleedb"]), Convert.ToDouble(p["bleedl"]) };
+                        Ps[Convert.ToInt32(p["pointid"])] = point;
+                    }
+                }
+            }
+            if (includeCurrent && !checkBox1.Checked && (includeStealth || !checkBox2.Checked))
+            {
+                //点集合，序号、中心点及出血大小（像素）（pointid => {Longitude,Latitude,Up,Right,Bottom,Left}）
+                point = new double[] { Convert.ToDouble(numericUpDown13.Value), Convert.ToDouble(numericUpDown14.Value), Convert.ToDouble(numericUpDown17.Value), Convert.ToDouble(numericUpDown18.Value), Convert.ToDouble(numericUpDown19.Value), Convert.ToDouble(numericUpDown20.Value) };
+                Ps[pointid] = point;
+            }
+            return Ps;
+        }
+
+        /// <summary>  
+        ///   获取点集合用于显示。序号、标题，内容，点坐标，显示内容，图标，字体及偏移（{Pointid,Title,Content,Pointx,Pointy,isOpen,Icon,Font[],Skewx,Skewy}）
+        /// </summary>  
+        /// <param name="sh">数据库链接</param>  
+        /// <param name="projectid">项目id</param>
+        /// <param name="includeCurrent">true包含未保存的当前点,false不包含（用于预览）</param>
+        public string GetPs2Json(SQLiteHelper sh, int projectid, bool includeCurrent = false)
+        {
+            string PsJson = "";
+            DataTable dt = sh.Select("select * from point where project = " + projectid + ";");
+            foreach (DataRow p in dt.Rows)
+            {
+                if (Convert.ToBoolean(p["switch"]) || Convert.ToBoolean(p["stealth"]))
+                {
+                    p.Delete();
+                    continue;
+                }
+                int pid = Convert.ToInt32(p["pointid"]);
+                if (includeCurrent && pid == pointid)
+                {
+                    p.Delete();
+                    continue;
+                }
+                int fid = Convert.ToInt32(p["font"]);
+                Dictionary<string, string> font = GetFontSet(sh, fid);
+                if(font == null)
+                {
+                    p["font"] = ("{fontSize:\"20px\",borderolor:\"#808080\",color:\"#333\",cursor:\"pointer\"}");
+                    continue;
+                }
+                
+                p["font"] = ("{fontSize:\"" + font["fontSize"] + "px\"," + font["content"] + "}");
+            }
+            dt.AcceptChanges();
+            if (includeCurrent && !checkBox1.Checked && !checkBox2.Checked)
+            {
+                DataRow current = dt.NewRow();
+                current["pointid"] = pointid;
+                current["title"] = htmlencode(textBox2.Text);
+                current["content"] = htmlencode(textBox3.Text);
+                current["pointx"] = numericUpDown13.Value;
+                current["pointy"] = numericUpDown14.Value;
+                current["isopen"] = Convert.ToInt32(checkBox3.Checked);
+                current["icon"] = textBox4.Text.Trim();
+                current["skewx"] = numericUpDown15.Value;
+                current["skewy"] = numericUpDown16.Value;
+
+                Dictionary<string, string>  font = GetFontSet(sh, Convert.ToInt32(comboBox1.Text.Trim()));
+                if (font == null)
+                {
+                    current["font"] = ("{fontSize:\"20px\",borderolor:\"#808080\",color:\"#333\",cursor:\"pointer\"}");
+                }else
+                {
+                    current["font"] = ("{fontSize:\"" + font["fontSize"] + "px\"," + font["content"] + "}");
+                }
+
+                dt.Rows.Add(current);
+            }
+            string[] jcol = new string[] { "font" };
+            PsJson = JsonHelper.JsonHelper.ToJson(dt, jcol);
+            return PsJson;
+        }
+        /// <summary>  
+        ///   立即预览
+        /// </summary>  
+        private void previewPoint ()
+        {
+            string PsJson = GetPs2Json(sh, projectid, true);
+            string center_x = numericUpDown13.Value.ToString();
+            string center_y = numericUpDown14.Value.ToString();
+            string pixel_x = geckoWebBrowser1.Width.ToString() + "px";
+            string pixel_y = geckoWebBrowser1.Height.ToString() + "px";
+
+        }
+        /// <summary>  
+        ///   计算中心点，尺寸，漏点数，重点数，切片数，延时数
+        /// </summary>  
+        private void DisplayResult()
+        {
+            MapHelper.MapHelper mh = new MapHelper.MapHelper(level, area_bleed_Pixel, cut_area_pixel, GetPs(sh, projectid, false, true));
+            string center_x = Math.Round(mh.center_x_LL, 6).ToString();
+            string center_y = Math.Round(mh.center_y_LL, 6).ToString();
+            string pixel_x = mh.area_pixel_x.ToString();
+            string pixel_y = mh.area_pixel_y.ToString();
+            int[] lack = mh.user_area_lack;
+            int lack_count = lack.Count();
+            Dictionary<string, string[]> cut = mh.cut_pixel_and_center_LL;
+            int cut_count = cut.Count();
+            int delay_count = cut_count * delay;
+
+            MapHelper.MapHelper mh_cover = new MapHelper.MapHelper(level, area_bleed_Pixel, cut_area_pixel, GetPs(sh, projectid, false, false));
+            int[] cover = mh_cover.user_area_cover;
+            int cover_count = cover.Count();
+
+            label4.Text = center_x + "|" + center_y;
+            label5.Text = "width:"+ pixel_x +"px;height:" + pixel_y  + "px;";
+            label38.Text = lack_count.ToString();
+            label39.Text = cover_count.ToString();
+            label40.Text = cut_count.ToString();
+            label42.Text = delay_count + "毫秒";
+            if(lack_count > 0 || cover_count > 0)
+            {
+                string strA = convertArr2Str(lack);
+                string strB = convertArr2Str(cover);
+                string text = String.Format("当前设置存在漏点或重叠点问题！"+System.Environment.NewLine + "漏掉的点：{0}" + System.Environment.NewLine + "重叠的点：{1}", strA, strB);
+                MessageBox.Show(text, "警告");
+            }
+        }
+       
+        #endregion
 
     }
 }
