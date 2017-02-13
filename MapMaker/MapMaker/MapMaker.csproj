@@ -115,6 +115,7 @@
     <Compile Include="SQLiteHelper\SQLiteColumnList.cs" />
     <Compile Include="SQLiteHelper\SQLiteHelper.cs" />
     <Compile Include="SQLiteHelper\SQLiteTable.cs" />
+    <Compile Include="TxtHelper\MapViewHelper.cs" />
     <Compile Include="TxtHelper\TxtHelper.cs" />
     <EmbeddedResource Include="Form1.resx">
       <DependentUpon>Form1.cs</DependentUpon>

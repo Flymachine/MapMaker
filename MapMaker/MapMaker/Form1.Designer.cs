@@ -1808,9 +1808,9 @@
             this.label4.AutoSize = true;
             this.label4.Location = new System.Drawing.Point(110, 0);
             this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(107, 12);
+            this.label4.Size = new System.Drawing.Size(113, 12);
             this.label4.TabIndex = 24;
-            this.label4.Text = "0.000000|0.000000";
+            this.label4.Text = "0.000000, 0.000000";
             // 
             // label5
             // 
@@ -1908,7 +1908,7 @@
             this.tableLayoutPanel2.Name = "tableLayoutPanel2";
             this.tableLayoutPanel2.RowCount = 1;
             this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this.tableLayoutPanel2.Size = new System.Drawing.Size(220, 12);
+            this.tableLayoutPanel2.Size = new System.Drawing.Size(226, 12);
             this.tableLayoutPanel2.TabIndex = 33;
             // 
             // tableLayoutPanel3

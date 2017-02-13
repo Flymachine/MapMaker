@@ -1272,18 +1272,87 @@ namespace MapMaker
             PsJson = JsonHelper.JsonHelper.ToJson(dt, jcol);
             return PsJson;
         }
+
+        /// <summary>  
+        ///   获取点集合用于显示。序号、标题，内容，点坐标，显示内容，图标，字体及偏移（{Pointid,Title,Content,Pointx,Pointy,isOpen,Icon,Font[],Skewx,Skewy}）
+        /// </summary>  
+        /// <param name="sh">数据库链接</param>  
+        /// <param name="projectid">项目id</param>
+        /// <param name="includeCurrent">true包含未保存的当前点,false不包含（用于预览）</param>
+        public Dictionary<string, string> GetCon2Dic(SQLiteHelper sh, int projectid, bool includeCurrent = false)
+        {
+            Dictionary<string, string> cons = new Dictionary<string, string>();
+            //地图
+            //级别
+            cons["level"] = numericUpDown1.Value.ToString();
+            //地图style
+            //百度ak密钥
+            if(!checkBox6.Checked)
+            {
+                cons[textBox12.Text] = textBox5.Text.Trim();
+            }
+            //兴趣点
+            if (checkBox4.Checked)
+            {
+                cons[textBox15.Text] = textBox13.Text.Trim();
+            }
+            //百度logo
+            if (checkBox5.Checked)
+            {
+                cons[textBox17.Text] = textBox14.Text.Trim();
+            }
+            cons["point"] = GetPs2Json(sh, projectid, includeCurrent);
+            return cons;
+        }
+
         /// <summary>  
         ///   立即预览
         /// </summary>  
         private void previewPoint ()
         {
-            string PsJson = GetPs2Json(sh, projectid, true);
+            //生成常量与变量字典
+            Dictionary<string, string> con_dic = GetCon2Dic(sh, projectid, true);
+            Dictionary<string, string> var_dic = new Dictionary<string, string>();
             string center_x = numericUpDown13.Value.ToString();
             string center_y = numericUpDown14.Value.ToString();
             string pixel_x = geckoWebBrowser1.Width.ToString() + "px";
             string pixel_y = geckoWebBrowser1.Height.ToString() + "px";
-
+            var_dic["pixel"] = string.Format("width:{0};height:{1};", pixel_x, pixel_x);
+            var_dic["center"] = string.Format("{0},{1}", center_x, center_y);
+            //导入文件
+            MapMaker.TxtHelper.TxtHelper th = new TxtHelper.TxtHelper(con_dic);
+            th.Change(var_dic, "P");
         }
+
+        /// <summary>  
+        ///   预览全图
+        /// </summary>  
+        private void previewAll()
+        {
+            //生成常量与变量字典
+            Dictionary<string, string> con_dic = GetCon2Dic(sh, projectid, false);
+            Dictionary<string, string> var_dic = new Dictionary<string, string>();
+            if(checkBox7.Checked)
+            {
+                var_dic["center"] = string.Format("{0},{1}", numericUpDown6.Value.ToString(), numericUpDown7.Value.ToString());
+            }
+            else
+            {
+                var_dic["center"] = label4.Text;
+            }
+            if(checkBox8.Checked)
+            {
+                var_dic["pixel"] = string.Format("width:{0};height:{1};", numericUpDown8.Value.ToString(), numericUpDown9.Value.ToString());
+            }
+            else
+            {
+                var_dic["pixel"] = label5.Text;
+            }
+            //导入文件
+            MapMaker.TxtHelper.TxtHelper th = new TxtHelper.TxtHelper(con_dic);
+            th.Change(var_dic, "S");
+        }
+
         /// <summary>  
         ///   计算中心点，尺寸，漏点数，重点数，切片数，延时数
         /// </summary>  
@@ -1304,7 +1373,7 @@ namespace MapMaker
             int[] cover = mh_cover.user_area_cover;
             int cover_count = cover.Count();
 
-            label4.Text = center_x + "|" + center_y;
+            label4.Text = center_x + ", " + center_y;
             label5.Text = "width:"+ pixel_x +"px;height:" + pixel_y  + "px;";
             label38.Text = lack_count.ToString();
             label39.Text = cover_count.ToString();
