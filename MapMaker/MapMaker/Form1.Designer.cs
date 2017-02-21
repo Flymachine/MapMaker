@@ -1658,6 +1658,7 @@
             this.button2.TabIndex = 4;
             this.button2.Text = "快速预览";
             this.button2.UseVisualStyleBackColor = true;
+            this.button2.Click += new System.EventHandler(this.button2_Click);
             // 
             // label19
             // 
@@ -1961,6 +1962,7 @@
             this.button17.TabIndex = 38;
             this.button17.Text = "预览全图";
             this.button17.UseVisualStyleBackColor = true;
+            this.button17.Click += new System.EventHandler(this.button17_Click);
             // 
             // MainForm1
             // 

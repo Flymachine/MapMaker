@@ -1,0 +1,211 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta name="keywords" content="百度地图,百度地图API，百度地图自定义工具，百度地图所见即所得工具" />
+    <meta name="description" content="百度地图API自定义地图，帮助用户在可视化操作下生成百度地图" />
+    <title>钜成map</title>
+    <!--引用百度地图API-->
+    <style type="text/css">
+        .anchorBL{display:none;}
+        html,body{margin:0;padding:0;}
+        .iw_poi_title {color:#CC5522;font-size:14px;font-weight:bold;overflow:hidden;padding-right:13px;white-space:nowrap}
+        .iw_poi_content {font:12px arial,sans-serif;overflow:visible;padding-top:4px;white-space:-moz-pre-wrap;word-wrap:break-word}
+    </style>
+    <script type="text/javascript" src="http://api.map.baidu.com/api?v=2.0&ak=w5fNUB4DnonHEq127ZGHn50WYCWcmRvG"></script>
+</head>
+
+<body>
+<!--百度地图容器 width:15293px;height:9597px 1294.8 812.5 border:#ccc solid 1px;(1300 2.6 820 3.5 4)-->
+<!--width:13000px;height:12000px;-->
+<div style="width:13000px;height:12000px;" id="dituContent"></div>
+</body>
+<script type="text/javascript">
+    //创建和初始化地图函数：
+    function initMap(){
+        createMap();//创建地图
+        setMapEvent();//设置地图事件
+        addMapControl();//向地图添加控件
+        addMarker();//向地图中添加marker
+    }
+
+    //创建地图函数：
+    function createMap(){
+        var map = new BMap.Map("dituContent");//在百度地图容器中创建一个地图
+        var point = new BMap.Point(113.6901475,34.754918);//定义一个中心点坐标
+        map.centerAndZoom(point,16);//设定地图的中心点和坐标并将地图显示在地图容器中
+        window.map = map;//将map变量存储在全局
+
+    }
+
+    //地图事件设置函数：
+    function setMapEvent(){
+        map.setMapStyle({
+            styleJson:[{
+                "featureType": "poi",
+                "elementType": "all",
+                "stylers": {
+                    "visibility": "off"
+                }
+            }]
+        });
+        map.disableDragging();//启用地图拖拽事件，默认启用(可不写)
+        map.disableScrollWheelZoom();//禁用地图滚轮放大缩小，默认禁用(可不写)
+        map.disableDoubleClickZoom();//禁用鼠标双击放大
+        map.disableKeyboard();//禁用键盘上下左右键移动地图，默认禁用(可不写)
+//        map.addEventListener("tilesloaded",function(e){
+//            document.dispatchEvent(new MessageEvent('FreezerFire')); // trigger the screenshot
+//        });
+    }
+
+    //地图控件添加函数：
+    function addMapControl(){
+//        //向地图中添加缩放控件
+//        var ctrl_nav = new BMap.NavigationControl({anchor:BMAP_ANCHOR_TOP_LEFT,type:BMAP_NAVIGATION_CONTROL_ZOOM});
+//        map.addControl(ctrl_nav);
+//        //向地图中添加缩略图控件
+//        var ctrl_ove = new BMap.OverviewMapControl({anchor:BMAP_ANCHOR_BOTTOM_RIGHT,isOpen:0});
+//        map.addControl(ctrl_ove);
+        //向地图中添加比例尺控件
+        var ctrl_sca = new BMap.ScaleControl({anchor:BMAP_ANCHOR_BOTTOM_LEFT});
+        map.addControl(ctrl_sca);
+    }
+
+    //{title:"左下角！！！！！！！！",content:"左下角",point:"113.426183|34.614833",isOpen:0,icon:{w:23,h:25,l:46,t:21,x:9,lb:12}},
+    //{title:"右上角！！！！！！！！！！",content:"右上角",point:"113.954112|34.895003",isOpen:0,icon:{w:23,h:25,l:46,t:21,x:9,lb:12}},
+
+    //标注点数组
+    var markerArr = [{title:"中原眼镜城",content:"金沙快速路与北三环交叉口东北角",point:"113.621229|34.813774",isOpen:0,icon:{w:23,h:25,l:46,t:21,x:9,lb:12}},
+        {title:"双桥花卉市场",content:"江山路开元路交叉口附近",point:"113.596577|34.87192",isOpen:0,icon:{w:23,h:25,l:46,t:21,x:9,lb:12}},
+        {title:"中原水产物流港",content:"惠济区绿源路8号",point:"113.58068|34.895003",isOpen:0,icon:{w:23,h:25,l:46,t:21,x:9,lb:12}},
+        {title:"郑州市科技市场",content:"东风路与文化路交叉口",point:"113.674289|34.804135",isOpen:0,icon:{w:23,h:25,l:46,t:21,x:9,lb:12}},
+        {title:"天荣建材港",content:"花园路三全路往北200米路北",point:"113.693572|34.837582",isOpen:0,icon:{w:23,h:25,l:46,t:21,x:9,lb:12}},
+        {title:"金水区马渡乡金马产业园",content:"金水区东四环马渡乡公园附近",point:"113.811027|34.874074",isOpen:0,icon:{w:23,h:25,l:46,t:21,x:9,lb:12}},
+        {title:"郑州信基建材厨具",content:"南阳路立交桥东侧，南邻环城快速路",point:"113.63711|34.822068",isOpen:0,icon:{w:23,h:25,l:46,t:21,x:9,lb:12}},
+        {title:"商堡汽配装饰批发市场",content:"花园路与国基路交汇处",point:"113.686457|34.825333",isOpen:0,icon:{w:23,h:25,l:46,t:21,x:9,lb:12}},
+        {title:"郑州宏达车业广场",content:"郑花路86号",point:"113.683072|34.829852",isOpen:0,icon:{w:23,h:25,l:46,t:21,x:9,lb:12}},
+        {title:"郑州丰乐五金机电城",content:"北环路与索凌路交叉口向南100米、博颂路宋寨",point:"113.641112|34.813865",isOpen:0,icon:{w:23,h:25,l:46,t:21,x:9,lb:12}},
+        {title:"河南科技市场百脑汇",content:"文化路与东风路交叉口向东100米路北",point:"113.677685|34.804899",isOpen:0,icon:{w:23,h:25,l:46,t:21,x:9,lb:12}},
+        {title:"河南科技市场数码港",content:"文化路与东风路交叉口东北角",point:"113.673287|34.80606",isOpen:0,icon:{w:23,h:25,l:46,t:21,x:9,lb:12}},
+        {title:"郑州创新大厦",content:"文化路与东风路交叉口向南400米路东",point:"113.67331|34.802844",isOpen:0,icon:{w:23,h:25,l:46,t:21,x:9,lb:12}},
+        {title:"黄河路服装批发市场",content:"黄河路经七路",point:"113.678986|34.782339",isOpen:0,icon:{w:23,h:25,l:46,t:21,x:9,lb:12}},
+        {title:"八堡汽配城",content:"花园北路111号，东起中州大道，西接花园路，南抵三全路，北临连霍高速",point:"113.755858|34.87749",isOpen:0,icon:{w:23,h:25,l:46,t:21,x:9,lb:12}},
+        {title:"中部两岸海鲜城",content:"花园路北4环200米路东",point:"113.679301|34.893124",isOpen:0,icon:{w:23,h:25,l:46,t:21,x:9,lb:12}},
+        {title:"万客隆种子批发市场、机电市场",content:"中州大道连霍高速北1公里",point:"113.694988|34.873218",isOpen:0,icon:{w:23,h:25,l:46,t:21,x:9,lb:12}},
+        {title:"宝龙精品茶城",content:"九如路宝龙广场",point:"113.74533|34.78644",isOpen:0,icon:{w:23,h:25,l:46,t:21,x:9,lb:12}},
+        {title:"华丰灯饰界",content:"七里河南路与南岗街交叉口南150米",point:"113.747704|34.751941",isOpen:0,icon:{w:23,h:25,l:46,t:21,x:9,lb:12}},
+        {title:"精品玻璃市场",content:"小雍庄商都大道",point:"113.860187|34.744349",isOpen:0,icon:{w:23,h:25,l:46,t:21,x:9,lb:12}},
+        {title:"浩瀚建材园",content:"康庄路商都路向北300米左右",point:"113.859391|34.744488",isOpen:0,icon:{w:23,h:25,l:46,t:21,x:9,lb:12}},
+        {title:"庞大不锈钢物流园",content:"郑汴物流通道与康庄路交叉口",point:"113.859615|34.760916",isOpen:0,icon:{w:23,h:25,l:46,t:21,x:9,lb:12}},
+        {title:"东盛建材城",content:"圃田镇郑州板材装饰大市场对面",point:"113.854418|34.742854",isOpen:0,icon:{w:23,h:25,l:46,t:21,x:9,lb:12}},
+        {title:"郑州金海马家居",content:"郑汴路东段",point:"113.761826|34.754182",isOpen:0,icon:{w:23,h:25,l:46,t:21,x:9,lb:12}},
+        {title:"中博世贸家具广场",content:"未来路与郑汴路交叉口南",point:"113.710001|34.75539",isOpen:0,icon:{w:23,h:25,l:46,t:21,x:9,lb:12}},
+        {title:"郑州金三角陶瓷城",content:"郑汴路与中州大道",point:"113.848645|34.743095",isOpen:0,icon:{w:23,h:25,l:46,t:21,x:9,lb:12}},
+        {title:"郑州金海马五金机电城",content:"商都路与聚源路交叉口",point:"113.754015|34.757604",isOpen:0,icon:{w:23,h:25,l:46,t:21,x:9,lb:12}},
+        {title:"白沙厨电洁具精品园区",content:"商都路与108乡道向东100米路北",point:"113.864277|34.755708",isOpen:0,icon:{w:23,h:25,l:46,t:21,x:9,lb:12}},
+        {title:"中原木工机械物流园",content:"商都路与108乡道向西500米路北",point:"113.886603|34.739464",isOpen:0,icon:{w:23,h:25,l:46,t:21,x:9,lb:12}},
+        {title:"豫通批发电动车配件总汇",content:"城东路89号",point:"113.69817|34.763573",isOpen:0,icon:{w:23,h:25,l:46,t:21,x:9,lb:12}},
+        {title:"福蒙特家居城",content:"郑州管城回族区汉风路南150米",point:"113.805292|34.748819",isOpen:0,icon:{w:23,h:25,l:46,t:21,x:9,lb:12}},
+        {title:"五洲陶瓷城",content:"商都路与黄河南路交叉口500米",point:"113.757511|34.752769",isOpen:0,icon:{w:23,h:25,l:46,t:21,x:9,lb:12}},
+        {title:"国产车汽车配件市场",content:"管城区南曹乡姚庄",point:"113.736686|34.702517",isOpen:0,icon:{w:23,h:25,l:46,t:21,x:9,lb:12}},
+        {title:"万邦蔬菜批发市场",content:"中牟县万洪路789号",point:"113.954112|34.703778",isOpen:0,icon:{w:23,h:25,l:46,t:21,x:9,lb:12}},
+        {title:"河南海通汽车配件有限公司物流产业园",content:"南三环与第二十二大街交叉口向南3.5公里国际物流园区",point:"113.857166|34.675172",isOpen:0,icon:{w:23,h:25,l:46,t:21,x:9,lb:12}},
+        {title:"郑州鑫兴建材城",content:"南三环以南500米",point:"113.676473|34.666882",isOpen:0,icon:{w:23,h:25,l:46,t:21,x:9,lb:12}},
+        {title:"河南汽贸园",content:"南三环南曹乡",point:"113.72766|34.706259",isOpen:0,icon:{w:23,h:25,l:46,t:21,x:9,lb:12}},
+        {title:"金泰城灯饰广场",content:"淮河东路29号",point:"113.648587|34.735012",isOpen:0,icon:{w:23,h:25,l:46,t:21,x:9,lb:12}},
+        {title:"郑州化工物流园",content:"航海西路与西三环交叉口向南100米路西",point:"113.609405|34.723663",isOpen:0,icon:{w:23,h:25,l:46,t:21,x:9,lb:12}},
+        {title:"南三环五金塑料城",content:"京广南路与南三环交叉口",point:"113.663921|34.702882",isOpen:0,icon:{w:23,h:25,l:46,t:21,x:9,lb:12}},
+        {title:"郑州中陆机电城",content:"南三环与京广路东200米路南",point:"113.669559|34.704186",isOpen:0,icon:{w:23,h:25,l:46,t:21,x:9,lb:12}},
+        {title:"金岱产业集聚区",content:"中州大道南三环",point:"113.730372|34.692108",isOpen:0,icon:{w:23,h:25,l:46,t:21,x:9,lb:12}},
+        {title:"陇西家具城",content:"陇海路与伏牛路",point:"113.623063|34.749401",isOpen:0,icon:{w:23,h:25,l:46,t:21,x:9,lb:12}},
+        {title:"郑州市西建材",content:"淮河路与嵩山路交叉口",point:"113.634821|34.737706",isOpen:0,icon:{w:23,h:25,l:46,t:21,x:9,lb:12}},
+        {title:"元通纺织城",content:"郑上路和西四环交汇处",point:"113.533824|34.773404",isOpen:0,icon:{w:23,h:25,l:46,t:21,x:9,lb:12}},
+        {title:"郑州佳和家具城",content:"陇海路78号佳和家俱城（第十九中学对面",point:"113.642331|34.742135",isOpen:0,icon:{w:23,h:25,l:46,t:21,x:9,lb:12}},
+        {title:"郑州纺织大世界",content:"西站路",point:"113.630687|34.771613",isOpen:0,icon:{w:23,h:25,l:46,t:21,x:9,lb:12}},
+        {title:"郑州五金机电城",content:"郑州老107与航海路交叉口（七里河村对面）",point:"113.725661|34.727843",isOpen:0,icon:{w:23,h:25,l:46,t:21,x:9,lb:12}},
+        {title:"五洲国际工业博览城",content:"中原西路棋源路",point:"113.426183|34.756719",isOpen:0,icon:{w:23,h:25,l:46,t:21,x:9,lb:12}},
+        {title:"河南豫德隆物流有限公司",content:"西四环建设西路",point:"113.537344|34.771419",isOpen:0,icon:{w:23,h:25,l:46,t:21,x:9,lb:12}},
+        {title:"八堡兽药市场",content:"京深线与索须河大桥交汇处",point:"113.752813|34.879708",isOpen:0,icon:{w:23,h:25,l:46,t:21,x:9,lb:12}},
+        {title:"天荣汽配城",content:"花园路三全路往北200米路北",point:"113.686107|34.840277",isOpen:0,icon:{w:23,h:25,l:46,t:21,x:9,lb:12}},
+        {title:"东建材",content:"郑汴路与中州大道交叉口",point:"113.730317|34.751829",isOpen:0,icon:{w:23,h:25,l:46,t:21,x:9,lb:12}},
+        {title:"中贸水暖建材区",content:"航海西路与南三环交叉口往南",point:"113.610226|34.722816",isOpen:0,icon:{w:23,h:25,l:46,t:21,x:9,lb:12}},
+        {title:"中原第一食品城",content:"郑密路南四环西北角",point:"113.595004|34.689724",isOpen:0,icon:{w:23,h:25,l:46,t:21,x:9,lb:12}},
+        {title:"华中水果批发市场",content:"郑密路与南四环路东",point:"113.614835|34.691084",isOpen:0,icon:{w:23,h:25,l:46,t:21,x:9,lb:12}},
+        {title:"中原百姓广场",content:"嵩山路与南三环交叉口",point:"113.634753|34.709346",isOpen:0,icon:{w:23,h:25,l:46,t:21,x:9,lb:12}},
+        {title:"合盛商贸城",content:"航海东路与京广南路东侧",point:"113.667604|34.723527",isOpen:0,icon:{w:23,h:25,l:46,t:21,x:9,lb:12}},
+        {title:"百荣世贸商城",content:"南四环大学路向东1000米",point:"113.658537|34.670453",isOpen:0,icon:{w:23,h:25,l:46,t:21,x:9,lb:12}},
+        {title:"南四环农贸市场",content:"南四环与京广快速路东",point:"113.672635|34.667563",isOpen:0,icon:{w:23,h:25,l:46,t:21,x:9,lb:12}},
+        {title:"双桥汽配城",content:"江山路与开元路交叉口西南侧",point:"113.60024|34.864051",isOpen:0,icon:{w:23,h:25,l:46,t:21,x:9,lb:12}},
+        {title:"华南城",content:"郑新快速路与双湖大道",point:"113.733957|34.614833",isOpen:0,icon:{w:23,h:25,l:46,t:21,x:9,lb:12}},
+        {title:"亚邦汽车科技产业园",content:"东四环马渡村",point:"113.826343|34.855151",isOpen:0,icon:{w:23,h:25,l:46,t:21,x:9,lb:12}},
+        {title:"金地陶瓷城",content:"万三路与万洪路东北角",point:"113.928552|34.707161",isOpen:0,icon:{w:23,h:25,l:46,t:21,x:9,lb:12}},
+        {title:"新中原陶瓷城",content:"万三公路",point:"113.92506|34.725667",isOpen:0,icon:{w:23,h:25,l:46,t:21,x:9,lb:12}},
+        {title:"宽广洁具批发市场",content:"南三环文治路",point:"113.730034|34.704127",isOpen:0,icon:{w:23,h:25,l:46,t:21,x:9,lb:12}},
+        {title:"百荣华中食品城",content:"南四环大学路交叉口路东",point:"113.65435|34.669536",isOpen:0,icon:{w:23,h:25,l:46,t:21,x:9,lb:12}}
+    ];
+    //创建marker
+    function addMarker(){
+        for(var i=0;i < markerArr.length;i++){
+            var json = markerArr[i];
+            var p0 = json.point.split("|")[0];
+            var p1 = json.point.split("|")[1];
+            var point = new BMap.Point(p0,p1);
+//            var iconImg = createIcon(json.icon);
+            var marker = new BMap.Marker(point);
+//            var marker = new BMap.Marker(point,{icon:iconImg});
+            //var iw = createInfoWindow(i);
+            if(json.isOpen)
+            {
+                var content = "<b>"+json.title + "</b><hr/>" + json.content;
+            }else
+            {
+                var content = "<b>"+json.title + "</b>"
+            }
+            var label = new BMap.Label(content,{"offset":new BMap.Size(18,-20)});
+            marker.setLabel(label);
+            map.addOverlay(marker);
+            label.setStyle({
+                borderolor:"#808080",
+                color:"#333",
+                cursor:"pointer",
+                fontSize:"20px",
+            });
+
+//            (function(){
+//                var index = i;
+//                var _iw = createInfoWindow(i);
+//                var _marker = marker;
+//                _marker.addEventListener("click",function(){
+//                    this.openInfoWindow(_iw);
+//                });
+//                _iw.addEventListener("open",function(){
+//                    _marker.getLabel().hide();
+//                });
+//                _iw.addEventListener("close",function(){
+//                    _marker.getLabel().show();
+//                });
+//                label.addEventListener("click",function(){
+//                    _marker.openInfoWindow(_iw);
+//                });
+//                if(!!json.isOpen){
+//                    label.hide();
+//                    _marker.openInfoWindow(_iw);
+//                }
+//            })()
+        }
+    }
+//    //创建InfoWindow
+//    function createInfoWindow(i){
+//        var json = markerArr[i];
+//        var iw = new BMap.InfoWindow("<b class='iw_poi_title' title='" + json.title + "'>" + json.title + "</b><div class='iw_poi_content'>"+json.content+"</div>");
+//        return iw;
+//    }
+//    //创建一个Icon
+//    function createIcon(json){
+//        var icon = new BMap.Icon("http://app.baidu.com/map/images/us_mk_icon.png", new BMap.Size(json.w,json.h),{imageOffset: new BMap.Size(-json.l,-json.t),infoWindowOffset:new BMap.Size(json.lb+5,1),offset:new BMap.Size(json.x,json.h)});
+//        return icon;
+//    }
+
+    initMap();//创建和初始化地图
+</script>
+</html>

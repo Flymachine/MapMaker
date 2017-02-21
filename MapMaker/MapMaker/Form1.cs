@@ -1178,6 +1178,22 @@ namespace MapMaker
 
         #region 预览与生成
         /// <summary>  
+        ///   显示快速预览结果
+        /// </summary> 
+        private void button2_Click(object sender, EventArgs e)
+        {
+            geckoWebBrowser1.Navigate("file:///" + previewPoint());
+        }
+
+        /// <summary>  
+        ///   显示全图预览结果
+        /// </summary> 
+        private void button17_Click(object sender, EventArgs e)
+        {
+            geckoWebBrowser1.Navigate("file:///" + previewAll());
+        }
+
+        /// <summary>  
         ///   获取点集合用于计算。序号、中心点及出血大小（像素）（pointid => {Longitude,Latitude,Up,Right,Bottom,Left}）
         /// </summary>  
         /// <param name="sh">数据库链接</param>  
@@ -1220,6 +1236,8 @@ namespace MapMaker
         {
             string PsJson = "";
             DataTable dt = sh.Select("select * from point where project = " + projectid + ";");
+            dt.Columns["font"].ColumnName = "fontid";
+            dt.Columns.Add("font");
             foreach (DataRow p in dt.Rows)
             {
                 if (Convert.ToBoolean(p["switch"]) || Convert.ToBoolean(p["stealth"]))
@@ -1233,7 +1251,7 @@ namespace MapMaker
                     p.Delete();
                     continue;
                 }
-                int fid = Convert.ToInt32(p["font"]);
+                int fid = Convert.ToInt32(p["fontid"]);
                 Dictionary<string, string> font = GetFontSet(sh, fid);
                 if(font == null)
                 {
@@ -1243,6 +1261,7 @@ namespace MapMaker
                 
                 p["font"] = ("{fontSize:\"" + font["fontSize"] + "px\"," + font["content"] + "}");
             }
+            dt.Columns.Remove("fontid");
             dt.AcceptChanges();
             if (includeCurrent && !checkBox1.Checked && !checkBox2.Checked)
             {
@@ -1308,7 +1327,7 @@ namespace MapMaker
         /// <summary>  
         ///   立即预览
         /// </summary>  
-        private void previewPoint ()
+        private string previewPoint ()
         {
             //生成常量与变量字典
             Dictionary<string, string> con_dic = GetCon2Dic(sh, projectid, true);
@@ -1319,15 +1338,15 @@ namespace MapMaker
             string pixel_y = geckoWebBrowser1.Height.ToString() + "px";
             var_dic["pixel"] = string.Format("width:{0};height:{1};", pixel_x, pixel_x);
             var_dic["center"] = string.Format("{0},{1}", center_x, center_y);
-            //导入文件
+            //导入文件,返回地址
             MapMaker.TxtHelper.TxtHelper th = new TxtHelper.TxtHelper(con_dic);
-            th.Change(var_dic, "P");
+            return th.Change(var_dic, "P");
         }
 
         /// <summary>  
         ///   预览全图
         /// </summary>  
-        private void previewAll()
+        private string previewAll()
         {
             //生成常量与变量字典
             Dictionary<string, string> con_dic = GetCon2Dic(sh, projectid, false);
@@ -1350,7 +1369,7 @@ namespace MapMaker
             }
             //导入文件
             MapMaker.TxtHelper.TxtHelper th = new TxtHelper.TxtHelper(con_dic);
-            th.Change(var_dic, "S");
+            return th.Change(var_dic, "S");
         }
 
         /// <summary>  
